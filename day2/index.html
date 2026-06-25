@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>День 1 · Блок 1 — Знакомство с нейросетями</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b; --ink:#f3f1ec; --mut:#8d8d88; --mut2:#62625e;
+  --orange:#fe9901; --orange2:#ff7a1a; --bad:#c8675b;
+  --line:rgba(255,255,255,.10); --card:rgba(255,255,255,.035);
+  --pad:110px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
+body{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.grain{position:fixed;inset:0;z-index:80;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ===== nav dots ===== */
+.dots{position:fixed;right:38px;top:50%;transform:translateY(-50%);z-index:70;display:flex;flex-direction:column;gap:14px}
+.dots a{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);transition:.25s;display:block}
+.dots a.on{background:var(--orange);transform:scale(1.35)}
+
+/* ===== screen ===== */
+.screen{position:relative;min-height:100vh;width:100%;display:flex;align-items:center;
+  padding:64px var(--pad);overflow:hidden;scroll-snap-align:start}
+.inner{position:relative;z-index:3;width:100%;max-width:1680px;margin:0 auto}
+
+.eyebrow{display:inline-flex;align-items:center;gap:14px;font-weight:700;font-size:15px;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--orange)}
+.eyebrow::before{content:"";width:38px;height:2px;background:var(--orange)}
+
+h1.big{font-family:'Unbounded';font-weight:800;line-height:.98;letter-spacing:-.01em;color:var(--ink)}
+/* пульсация акцентных слов */
+@keyframes pulseWord{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(254,153,1,0))}50%{transform:scale(1.05);filter:drop-shadow(0 0 22px rgba(254,153,1,.5))}}
+.pulse{display:inline-block;animation:pulseWord 1.7s ease-in-out infinite;transform-origin:center;will-change:transform}
+.uline{position:relative;white-space:nowrap}
+.uline svg{position:absolute;left:-4px;right:-10px;bottom:-14px;height:22px;width:calc(100% + 16px)}
+
+.pills{display:flex;flex-wrap:wrap;gap:12px}
+.pill{font-size:15px;font-weight:600;color:var(--ink);padding:9px 17px;border:1px solid var(--line);
+  border-radius:999px;background:var(--card);white-space:nowrap}
+.pill b{color:var(--orange);font-weight:700}
+
+.slidemark{position:absolute;left:var(--pad);bottom:42px;z-index:6;display:flex;align-items:center;gap:15px;
+  color:var(--mut2);font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.slidemark .num{color:var(--ink);font-family:'Unbounded';font-weight:700;font-size:17px;letter-spacing:0}
+
+/* фигуры персонажей: вырезаны (прозрачный фон), лёгкая тень для объёма */
+.figure{filter:drop-shadow(0 22px 48px rgba(0,0,0,.5))}
+
+/* glow */
+.glow{position:absolute;z-index:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(254,153,1,.20) 0%, rgba(254,122,26,.07) 36%, rgba(10,10,11,0) 66%)}
+
+/* chalk doodles */
+.doodle{position:absolute;z-index:1;opacity:.5;pointer-events:none;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ S1 · TITLE ============ */
+#s1{flex-direction:column;justify-content:center;text-align:center;padding-top:120px}
+.logos{position:absolute;top:46px;left:var(--pad);right:var(--pad);display:flex;justify-content:space-between;align-items:center;z-index:6}
+.logos img{display:block;width:auto}
+.logos .logo-dv{height:52px;opacity:.96}
+.logos .logo-ms{height:34px;opacity:.96}
+#s1 .kicker{margin-bottom:30px}
+#s1 h1{font-size:62px;max-width:1380px;margin:0 auto}
+#s1 h1 .o{color:var(--orange)}
+#s1 .slogan{margin-top:54px;display:inline-flex;align-items:center;gap:14px;padding:16px 30px;
+  border:1px solid rgba(254,153,1,.4);border-radius:999px;background:rgba(254,153,1,.06)}
+#s1 .slogan .no{font-family:'Unbounded';font-weight:800;color:var(--orange);font-size:21px;letter-spacing:.02em}
+#s1 .slogan .rest{color:#cfcdc7;font-size:18px;font-weight:500}
+
+/* ============ S2 · SPEAKER ============ */
+#s2 .grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:40px;align-items:center}
+#s2 .figwrap{position:relative;height:83vh;max-height:870px;display:flex;align-items:center;justify-content:center}
+#s2 .figwrap img{height:100%;width:auto;object-fit:contain}
+#s2 h1{font-size:88px;margin:14px 0 30px}
+#s2 ul{list-style:none;display:flex;flex-direction:column;gap:16px}
+#s2 li{display:flex;align-items:center;gap:16px;font-size:25px;font-weight:500;color:#e7e5df}
+#s2 li .ck{flex:none;width:30px;height:30px;color:var(--orange)}
+#s2 li .hl{color:var(--orange);font-weight:700;text-transform:uppercase;text-decoration:none}
+#s2 li a.hl:hover{text-decoration:underline}
+
+/* ============ S3 · PROHOR ============ */
+#s3 .grid{display:grid;grid-template-columns:1.05fr .85fr;gap:36px;align-items:stretch}
+#s3 .figwrap{position:relative;order:2}
+/* живой Прохор в рамке-сторис: высота = высоте текстового блока (верх «Знакомьтесь» → низ «от аудита до креатива») */
+.vframe{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:auto;aspect-ratio:9/16;border-radius:28px;overflow:hidden;background:#000;
+  border:1.5px solid rgba(254,153,1,.5);
+  box-shadow:0 24px 60px rgba(0,0,0,.6), 0 0 64px rgba(254,153,1,.15), inset 0 0 0 1px rgba(0,0,0,.45)}
+.vframe video{width:100%;height:100%;object-fit:cover;display:block}
+.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;border:none;
+  background:rgba(254,153,1,.94);color:#0a0a0b;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;
+  box-shadow:0 10px 34px rgba(0,0,0,.5);transition:opacity .25s ease,transform .25s ease}
+.vplay svg{width:28px;height:28px;margin-left:3px}
+.vframe.playing .vplay{opacity:0;transform:translate(-50%,-50%) scale(.6);pointer-events:none}
+.vsound{position:absolute;right:13px;bottom:13px;width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.18);background:rgba(10,10,11,.55);
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:.2s;z-index:4}
+.vsound svg{width:20px;height:20px}
+.vsound:hover{background:var(--orange);color:#0a0a0b;border-color:var(--orange)}
+.mobonly{display:none}  /* отдельный видео-экран — только мобайл */
+/* Lottie-слои */
+.fx-confetti{position:absolute;inset:0;z-index:5;pointer-events:none}
+.fx-doodles{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.fx-doodles svg{width:100%;height:100%;display:block}
+#s4 .step-icon{position:absolute;top:30px;right:32px;width:60px;height:60px;pointer-events:none;opacity:.92;z-index:2}
+#s2 .lottie-check{display:inline-block;width:30px;height:30px;flex:none;pointer-events:none;line-height:0}
+#s3 h1{font-size:104px;margin:24px 0 0}
+#s3 .lead{margin-top:38px;font-size:25px;line-height:1.5;color:#cfcdc7;font-weight:500;max-width:680px}
+#s3 .lead+.lead{margin-top:22px}
+#s3 .lead .hl{color:#fff;font-weight:700}
+
+/* ============ S4 · PIPELINE ============ */
+#s4 .head{margin-bottom:18px}
+#s4 h1{font-size:58px;line-height:1.0;margin-top:14px}
+#s4 h1 .o{color:var(--orange)}
+#s4 .carousel{position:relative;height:452px;margin-top:4px}
+#s4 .cstep{position:absolute;left:50%;top:50%;width:442px;box-sizing:border-box;background:#151413;
+  border:1px solid var(--line);border-radius:24px;padding:40px 36px;cursor:pointer;will-change:transform,opacity;
+  transition:transform .5s cubic-bezier(.34,.05,.2,1),opacity .5s ease,border-color .3s ease,background .3s ease}
+#s4 .cstep.active{border-color:var(--orange);background:rgba(254,153,1,.07);box-shadow:0 34px 80px rgba(0,0,0,.55)}
+#s4 .cstep .n{font-family:'Unbounded';font-weight:800;font-size:27px;width:66px;height:66px;border-radius:50%;
+  background:var(--orange);color:#0a0a0b;display:flex;align-items:center;justify-content:center;margin-bottom:26px}
+#s4 .cstep h3{font-family:'Unbounded';font-weight:700;font-size:33px;color:#fff;margin-bottom:16px}
+#s4 .cstep p{font-size:22px;line-height:1.45;color:var(--mut)}
+#s4 .cstep .out{margin-top:20px;font-size:19px;line-height:1.4;color:var(--orange);font-weight:600;opacity:0;max-height:0;transition:opacity .4s ease,max-height .4s ease;overflow:hidden}
+#s4 .cstep.active .out{opacity:1;max-height:140px}
+#s4 .cnav{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:30px}
+#s4 .cnav button{width:54px;height:54px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);
+  color:#fff;font-size:20px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+#s4 .cnav button:hover{border-color:var(--orange);color:var(--orange)}
+#s4 .cdots{display:flex;gap:11px}
+#s4 .cdots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);cursor:pointer;transition:.2s}
+#s4 .cdots i.on{background:var(--orange);transform:scale(1.35)}
+
+/* ============ ORG · оргинформация (список .org-list + .tk-пилюли) ============ */
+#org h1{font-size:62px;margin-top:14px}
+#org .org-list{list-style:none;display:flex;flex-direction:column;gap:40px;margin-top:48px;max-width:1100px}
+#org .org-list li{display:flex;align-items:center;gap:20px;font-size:27px;font-weight:500;color:#e7e5df;line-height:1.5}
+#org .org-list li>span:last-child{margin-top:0}
+#org .org-list li .tk{flex:none;width:250px;text-align:center;font-family:'Unbounded';font-weight:800;font-size:16px;color:#0a0a0b;background:var(--orange);
+  padding:9px 10px;border-radius:999px;white-space:nowrap;margin-top:0}
+#org .org-list li b{color:#fff;font-weight:700}
+#org .org-note{margin-top:34px;font-size:20px;color:var(--mut);font-weight:600}
+#org .org-note .o{color:var(--orange);font-weight:700}
+
+/* ============ CONTRACT · контракт зала (.lead абзацы) ============ */
+#contract h1{font-size:66px;margin-top:14px}
+#contract .lead{margin-top:30px;font-size:27px;line-height:1.5;color:#cfcdc7;font-weight:500;max-width:1000px}
+#contract .lead+.lead{margin-top:22px}
+#contract .lead .hl{color:var(--orange);font-weight:700}
+#contract .lead b{color:#fff;font-weight:700}
+
+/* ============ POLL · утренняя гимнастика (один вопрос, по центру) ============ */
+#poll{flex-direction:column;justify-content:center;text-align:center}
+#poll h1,#assemble h1,#faq h1{font-size:64px;margin:18px auto 0;max-width:1400px}
+
+/* ============ TASK · задача дня (.promptbox-стиль) ============ */
+#task .head{margin-bottom:40px}
+#task h1{font-size:60px;margin-top:14px}
+#task h1 .o{color:var(--orange)}
+#task .promptbox{position:relative;max-width:1180px;background:rgba(254,153,1,.04);border:2px solid rgba(254,153,1,.38);border-radius:26px;padding:50px 52px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+#task .promptbox .plabel{position:absolute;top:-14px;left:38px;background:var(--orange);color:#0a0a0b;font-family:'Unbounded';font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:999px}
+#task .promptbox p{font-size:25px;line-height:1.62;color:#e7e5df;font-weight:500}
+#task .promptbox p+p{margin-top:18px}
+#task .promptbox b{color:#fff;font-weight:700}
+#task .promptbox .hl{color:var(--orange);font-weight:700}
+
+/* ============ ROUTE · маршрут дня (степпер блоков) ============ */
+.routescreen h1{font-size:62px;margin-top:14px}
+.routescreen .stepper{display:flex;align-items:stretch;gap:0;margin-top:46px;flex-wrap:wrap}
+.routescreen .rstep{position:relative;flex:1 1 0;min-width:200px;background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:30px 26px;transition:.3s}
+.routescreen .rstep.active{border-color:var(--orange);background:rgba(254,153,1,.08);box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.routescreen .rstep .rn{font-family:'Unbounded';font-weight:800;font-size:22px;width:54px;height:54px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);color:#cbc9c3;display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+.routescreen .rstep.active .rn{background:var(--orange);border-color:var(--orange);color:#0a0a0b}
+.routescreen .rstep h3{font-family:'Unbounded';font-weight:700;font-size:24px;color:#cbc9c3;line-height:1.1}
+.routescreen .rstep.active h3{color:#fff}
+.routescreen .rstep .now{margin-top:14px;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);font-weight:700;opacity:0}
+.routescreen .rstep.active .now{opacity:1}
+.routescreen .rarrow{flex:none;align-self:center;color:var(--mut2);font-size:26px;padding:0 14px}
+
+/* ============ NEURO4 · 4 нейронки (карточки .way) ============ */
+#neuro4 .head{margin-bottom:14px}
+#neuro4 h1{font-size:54px;line-height:1.04;margin-top:14px}
+#neuro4 h1 .o{color:var(--orange)}
+#neuro4 .sub{margin-top:18px;font-size:21px;color:var(--mut);max-width:1000px;line-height:1.5;font-weight:500}
+#neuro4 .sub b{color:#fff;font-weight:700}
+#neuro4 .ways{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;align-items:start;margin-top:34px}
+#neuro4 .way{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px 28px;transition:border-color .3s ease,background .3s ease,transform .3s ease}
+#neuro4 .way:hover{transform:translateY(-4px);border-color:var(--orange);background:rgba(254,153,1,.05)}
+#neuro4 .way h3{font-family:'Unbounded';font-weight:700;font-size:27px;color:#fff;margin-bottom:6px}
+#neuro4 .way .tag{font-size:16px;color:var(--orange);font-weight:700;margin-bottom:22px}
+#neuro4 .way .role{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut2);font-weight:700;margin-bottom:8px}
+#neuro4 .way p{font-size:18px;line-height:1.42;color:#cbc9c3;font-weight:500}
+#neuro4 .way p+.role{margin-top:22px}
+#neuro4 .way .exmpl{margin-top:14px;font-size:18px;line-height:1.42;color:#e7e5df;font-weight:600}
+#neuro4 .way .exmpl .hl{color:var(--orange);font-weight:700}
+
+/* ============ CMP · таблица сравнения ============ */
+#cmp .head{margin-bottom:14px}
+#cmp h1{font-size:60px;margin-top:12px}
+#cmp h1 .o{color:var(--orange)}
+#cmp .note{margin-top:16px;margin-bottom:22px;font-size:18px;color:var(--mut);font-weight:600}
+#cmp .note .o{color:var(--orange);font-weight:700}
+#cmp .tablewrap{overflow-x:auto}
+#cmp table{width:100%;border-collapse:collapse;min-width:960px}
+#cmp tr{border-top:1px solid var(--line)}
+#cmp tr:last-child{border-bottom:1px solid var(--line)}
+#cmp thead tr{border-top:none}
+#cmp th{padding:16px 22px;text-align:left;font-family:'Unbounded';font-weight:700;font-size:18px;color:var(--orange);letter-spacing:.02em;vertical-align:bottom}
+#cmp td{padding:20px 22px;font-size:23px;vertical-align:middle;color:var(--mut);font-weight:500}
+#cmp td.lbl{font-family:'Unbounded';font-weight:700;font-size:23px;color:#fff;width:210px}
+#cmp td.task{color:#e7e5df;font-weight:600}
+#cmp td .ph{color:var(--mut2);font-style:italic}
+
+/* ============ VOICE · сервисы говорильни ============ */
+#voice h1{font-size:64px;margin-top:14px}
+#voice .lead{margin-top:30px;font-size:27px;line-height:1.5;color:#cfcdc7;font-weight:500;max-width:980px}
+#voice .lead b{color:#fff;font-weight:700}
+#voice .svcs{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1560px}
+#voice .svc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px 30px;display:flex;flex-direction:column}
+#voice .svc .sn{font-family:'Unbounded';font-weight:800;font-size:30px;color:#fff;margin-bottom:8px}
+#voice .svc .splat{font-size:16px;color:var(--orange);font-weight:700;letter-spacing:.02em;margin-bottom:18px}
+#voice .svc p{font-size:20px;line-height:1.45;color:#cbc9c3;font-weight:500;flex:1}
+#voice .svc .sprice{margin-top:22px;font-size:21px;color:#e7e5df;font-weight:600}
+#voice .svc .sprice b{font-family:'Unbounded';font-weight:800;color:var(--orange)}
+
+/* ============ S8 · CTA ============ */
+#s8 .grid{display:grid;grid-template-columns:.8fr 1.05fr;gap:44px;align-items:center}
+#s8 .figwrap{position:relative;height:70vh;max-height:740px;display:flex;align-items:center;justify-content:center}
+#s8 .figwrap img{height:100%;width:auto;object-fit:contain}
+#s8 h1{font-size:72px;max-width:680px}
+#s8 h1 .o{color:var(--orange)}
+#s8 .qrwrap{margin-top:42px;display:flex;align-items:center;gap:34px}
+#s8 .qr{background:#fff;padding:22px;border-radius:22px;width:288px;height:288px;flex:none;box-shadow:0 0 0 1px rgba(254,153,1,.5),0 24px 70px rgba(0,0,0,.6)}
+#s8 .qr img{width:100%;height:100%;display:block}
+#s8 .cta-sub{font-size:27px;line-height:1.4;color:#cfcdc7;font-weight:600}
+#s8 .cta-sub .o{color:var(--orange);font-weight:700}
+#s8 .chan{margin-top:10px;font-family:'Unbounded';font-weight:700;font-size:19px;color:#fff;line-height:1.5}
+/* кликабельная ссылка-дублёр QR (для телефона, где QR со своего же экрана не отсканировать) */
+.tg-btn{display:none;align-items:center;gap:13px;background:var(--orange);color:#0a0a0b;
+  font-family:'Unbounded';font-weight:700;font-size:19px;letter-spacing:.005em;white-space:nowrap;
+  padding:18px 30px;border-radius:18px;text-decoration:none;
+  box-shadow:0 18px 46px rgba(254,153,1,.34);transition:transform .14s ease,box-shadow .14s ease}
+.tg-btn:active{transform:scale(.97)}
+.tg-btn svg{width:24px;height:24px;flex:none}
+
+/* ============ S4b · ЧАТ vs АГЕНТ (Супермозг с руками) ============ */
+#s4b .grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:40px;align-items:center}
+#s4b h1{font-size:64px;margin:14px 0 0}
+#s4b h1 .o{color:var(--orange)}
+#s4b .cva-line{margin-top:30px;font-size:26px;line-height:1.5;color:#cfcdc7;font-weight:500;max-width:560px;min-height:118px;transition:opacity .3s ease}
+#s4b .cva-line b{color:#fff;font-weight:700}
+#s4b .cva-line .o{color:var(--orange);font-weight:700}
+#s4b .cva-hint{margin-top:8px;font-size:16px;color:var(--mut2);font-weight:600;letter-spacing:.01em}
+#s4b .cva-verdict{margin-top:32px;font-family:'Unbounded';font-weight:700;font-size:27px;color:#fff;
+  opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+#s4b .cva-verdict .o{color:var(--orange)}
+#s4b.revealed .cva-verdict{opacity:1;transform:none}
+#s4b .cva-fig{position:relative;height:64vh;max-height:660px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none}
+#s4b .cva-fig:hover .brain{filter:drop-shadow(0 22px 48px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(254,153,1,.25))}
+#s4b .brain{position:absolute;max-height:100%;max-width:100%;width:auto;object-fit:contain;
+  filter:drop-shadow(0 22px 48px rgba(0,0,0,.5));transition:opacity .55s ease,transform .55s ease}
+#s4b .brain.agent{opacity:0;transform:scale(.95)}
+#s4b.revealed .brain.chat{opacity:0;transform:scale(.95)}
+#s4b.revealed .brain.agent{opacity:1;transform:none}
+
+/* ============ S5 · PROMPT vs SKILL ============ */
+#s5 .head{margin-bottom:24px}
+#s5 h1{font-size:64px;margin-top:12px}
+#s5 .toggle{display:inline-flex;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:6px;gap:6px;margin:18px 0 22px}
+#s5 .toggle button{font-family:'Unbounded';font-weight:700;font-size:18px;letter-spacing:.02em;color:var(--mut);
+  background:none;border:none;padding:14px 38px;border-radius:999px;cursor:pointer;transition:.25s}
+#s5 .toggle button.act{color:#0a0a0b;background:var(--orange)}
+#s5 .toggle button.act.p{background:#d8d6d0;color:#0a0a0b}
+#s5 .def{font-size:23px;font-weight:600;color:#fff;max-width:1000px;margin-bottom:22px;min-height:58px;line-height:1.4}
+#s5 .def .tag{font-family:'Unbounded';font-weight:800;margin-right:12px}
+#s5 .def.p .tag{color:#d8d6d0}#s5 .def.s .tag{color:var(--orange)}
+#s5 table{width:100%;border-collapse:collapse}
+#s5 tr{border-top:1px solid var(--line)}#s5 tr:last-child{border-bottom:1px solid var(--line)}
+#s5 td{padding:15px 20px;font-size:19px;vertical-align:middle;transition:.25s}
+#s5 .lbl{font-family:'Unbounded';font-weight:700;font-size:18px;color:#fff;width:230px}
+#s5 .cp,#s5 .cs{width:38%;color:var(--mut);font-weight:500}
+#s5 .cp .ic,#s5 .cs .ic{font-weight:800;margin-right:12px}
+#s5 .cp .ic{color:var(--bad)}#s5 .cs .ic{color:var(--orange)}
+#s5[data-state="skill"] .cs{color:#fff;font-weight:600}
+#s5[data-state="skill"] .cp{opacity:.34}
+#s5[data-state="prompt"] .cp{color:#eceae4;font-weight:600}
+#s5[data-state="prompt"] .cs{opacity:.34}
+
+/* ============ S6 · UNDER THE HOOD ============ */
+#s6 .head{margin-bottom:34px}
+#s6 h1{font-size:62px;margin-top:18px}
+#s6 h1 .o{color:var(--orange)}
+#s6 .sub{margin-top:20px;font-size:21px;color:var(--mut);max-width:900px;line-height:1.5}
+#s6 .sub b{color:#fff;font-weight:700}
+#s6 .ide{display:grid;grid-template-columns:.95fr 1.05fr;gap:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.02);height:44vh;min-height:360px}
+#s6 .tree{padding:22px 16px;overflow:auto;border-right:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:16px}
+#s6 .node{padding:7px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:9px;color:#d7d5cf;transition:.15s;white-space:nowrap}
+#s6 .node:hover{background:rgba(255,255,255,.05)}
+#s6 .node.sel{background:rgba(254,153,1,.14);color:#fff}
+#s6 .node.dir{color:#fff;font-weight:500}
+#s6 .node.file{padding-left:34px;color:#b9b7b1}
+#s6 .node .ico{width:17px;text-align:center;opacity:.9}
+#s6 .node.dir .ico{color:var(--orange)}
+#s6 .kids{overflow:hidden}
+#s6 .kids.closed{display:none}
+#s6 .detail{padding:40px 44px;display:flex;flex-direction:column;justify-content:center}
+#s6 .detail .fname{font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--orange);margin-bottom:8px;word-break:break-all}
+#s6 .detail .ftype{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut2);font-weight:700;margin-bottom:26px}
+#s6 .detail .fdesc{font-size:25px;line-height:1.5;color:#e7e5df;font-weight:500}
+#s6 .counter{margin-top:22px;display:flex;gap:40px}
+#s6 .counter .c{font-family:'Unbounded';font-weight:800;font-size:30px;color:var(--orange)}
+#s6 .counter .c span{display:block;font-family:'Manrope';font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut2);margin-top:4px}
+
+/* ============ S7 · 3 ПУТИ (клик-прорастание) ============ */
+.hint{margin-top:16px;font-size:16px;color:var(--mut2);font-weight:600}
+#s7 .head{margin-bottom:38px}
+#s7 h1{font-size:62px;line-height:1.0;margin-top:20px}
+#s7 h1 .o{color:var(--orange)}
+#s7 .ways{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:start}
+#s7 .way{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:40px 34px;cursor:pointer;transition:border-color .3s ease,background .3s ease,transform .3s ease}
+#s7 .way:hover{transform:translateY(-4px)}
+#s7 .way.open{border-color:var(--orange);background:rgba(254,153,1,.06)}
+#s7 .way .n{font-family:'Unbounded';font-weight:800;font-size:25px;width:60px;height:60px;border-radius:50%;background:var(--orange);color:#0a0a0b;display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+#s7 .way h3{font-family:'Unbounded';font-weight:700;font-size:29px;color:#fff;margin-bottom:4px}
+#s7 .way .tag{font-size:17px;color:var(--orange);font-weight:700;margin-bottom:26px}
+#s7 .way ul{list-style:none;display:flex;flex-direction:column;gap:15px;min-height:122px}
+#s7 .way li{font-size:19px;line-height:1.4;color:#cbc9c3;padding-left:22px;position:relative;font-weight:500;opacity:0;transform:translateX(-12px);transition:opacity .45s ease,transform .45s ease}
+#s7 .way li::before{content:"—";position:absolute;left:0;color:var(--orange);font-weight:700}
+#s7 .way.open li{opacity:1;transform:none}
+#s7 .way.open li:nth-child(1){transition-delay:.1s}
+#s7 .way.open li:nth-child(2){transition-delay:.38s}
+#s7 .way.open li:nth-child(3){transition-delay:.66s}
+
+/* ===================================================================== */
+/* ===== АДАПТИВ (десктопный CSS выше не трогаем; всё узкое — здесь) ==== */
+/* ===================================================================== */
+
+/* планшет-ландшафт / узкий ноут: только поджать поля и самые крупные титулы */
+/* ============ IMG-SLIDE · экраны-картинки (готовые слайды из ТГ) ============ */
+.imgslide{justify-content:center}
+.imgslide .inner{display:flex;justify-content:center;align-items:center}
+.imgslide img{max-height:88vh;max-width:100%;width:auto;display:block;border-radius:14px}
+
+/* ============ CHATDOES · чат vs агент (HTML-таблица) ============ */
+#chatdoes h1{font-size:52px;margin-top:10px}
+#chatdoes h1 .o{color:var(--orange)}
+#chatdoes .cd-sub{margin-top:14px;font-size:19px;line-height:1.45;color:var(--mut);font-weight:500;max-width:1150px}
+#chatdoes .cd-sub b{color:#fff;font-weight:700}
+#chatdoes .cdtable{width:100%;border-collapse:collapse;margin-top:18px;max-width:1440px;min-width:820px}
+#chatdoes .cdtable th{padding:8px 20px;text-align:left}
+#chatdoes .hpill{display:inline-block;font-family:'Unbounded';font-weight:800;font-size:17px;padding:9px 22px;border-radius:999px}
+#chatdoes .hpill.chat{background:rgba(255,255,255,.07);color:#cfcdc7}
+#chatdoes .hpill.agent{background:var(--orange);color:#0a0a0b}
+#chatdoes .cdtable tbody tr{border-top:1px solid var(--line)}
+#chatdoes .cdtable tbody tr:last-child{border-bottom:1px solid var(--line)}
+#chatdoes .cdtable td{padding:12px 20px;font-size:19px;vertical-align:middle}
+#chatdoes .cdtable .lbl{font-family:'Unbounded';font-weight:700;font-size:19px;color:#fff;width:260px}
+#chatdoes .cdtable .no{color:var(--mut);font-weight:500;width:33%}
+#chatdoes .cdtable .yes{color:#fff;font-weight:600;width:33%}
+#chatdoes .cdtable .ic{font-weight:800;margin-right:14px}
+#chatdoes .cdtable .no .ic{color:var(--bad)}
+#chatdoes .cdtable .yes .ic{color:var(--orange)}
+/* подстраховка для низких окон: ещё компактнее */
+@media (min-width:961px) and (max-height:820px){
+  #chatdoes h1{font-size:44px}
+  #chatdoes .cd-sub{font-size:17px;margin-top:10px}
+  #chatdoes .cdtable{margin-top:12px}
+  #chatdoes .cdtable td{padding:9px 18px;font-size:17px}
+  #chatdoes .cdtable .lbl{font-size:17px}
+  #chatdoes .hpill{font-size:15px;padding:7px 18px}
+}
+
+/* ============ GETCC · где взять Claude Code (HTML-карточки) ============ */
+#getcc h1{font-size:60px;margin-top:12px}
+#getcc h1 .o{color:var(--orange)}
+#getcc .ccways{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1560px}
+#getcc .ccway{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px 30px}
+#getcc .cchead{display:flex;align-items:center;gap:15px;margin-bottom:22px;flex-wrap:wrap}
+#getcc .cchead .n{font-family:'Unbounded';font-weight:800;font-size:23px;width:52px;height:52px;border-radius:50%;background:var(--orange);color:#0a0a0b;display:flex;align-items:center;justify-content:center;flex:none}
+#getcc .cchead h3{font-family:'Unbounded';font-weight:700;font-size:26px;color:#fff;text-transform:uppercase}
+#getcc .cchead .ctag{font-size:15px;color:var(--orange);font-weight:700;margin-left:auto}
+#getcc .ccway ul{list-style:none;display:flex;flex-direction:column;gap:14px}
+#getcc .ccway li{font-size:19px;line-height:1.4;color:#cbc9c3;font-weight:500;padding-left:22px;position:relative}
+#getcc .ccway li::before{content:"—";position:absolute;left:0;color:var(--orange);font-weight:700}
+
+@media (max-width:1240px){
+  :root{--pad:72px}
+  #s3 h1{font-size:88px}
+  #s2 h1{font-size:76px}
+  #s2 .figwrap,#s3 .figwrap{height:80vh}
+  #neuro4 .ways{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ГЛАВНЫЙ брейк — планшет-портрет и телефоны: всё в одну колонку */
+@media (max-width:960px){
+  #chatdoes h1{font-size:36px}
+  #chatdoes .cd-sub{font-size:17px;margin-top:14px}
+  #chatdoes .cdtable{margin-top:20px;min-width:560px}
+  #chatdoes .cdtable td{padding:12px 12px;font-size:16px}
+  #chatdoes .cdtable .lbl{font-size:15px;width:30%}
+  #chatdoes .cdtable .no,#chatdoes .cdtable .yes{width:auto}
+  #chatdoes .hpill{font-size:13px;padding:6px 13px}
+  #getcc h1{font-size:36px}
+  #getcc .ccways{grid-template-columns:1fr;gap:16px;margin-top:24px}
+  #getcc .ccway{padding:24px 22px}
+  #getcc .cchead h3{font-size:22px}
+  #getcc .cchead .ctag{margin-left:0;flex-basis:100%}
+  #getcc .ccway li{font-size:17px}
+
+  .imgslide img{max-height:none;width:100%}
+  html{scroll-snap-type:none}
+  :root{--pad:40px}
+
+  .screen{min-height:100svh;height:auto;align-items:flex-start;padding:94px var(--pad) 76px}
+  .inner{max-width:660px}
+  .dots{right:15px;gap:11px}
+  .doodle{display:none}            /* декор-каракули на узком экране лезут на текст — прячем */
+  .fx-doodles{display:none}        /* меловые дудлы — только десктоп */
+  .mobonly{display:flex}           /* отдельный видео-экран Прохора — показываем */
+  #s4 .step-icon{width:46px;top:22px;right:22px}
+  #s2 .lottie-check{width:26px;height:26px}
+
+  /* логотипы / номер слайда */
+  .logos{top:30px}
+  .logos .logo-dv{height:40px}
+  .logos .logo-ms{height:25px}
+  .slidemark{bottom:24px;font-size:12px}
+  .slidemark .num{font-size:15px}
+
+  /* ---- s1 титул ---- */
+  #s1{align-items:center;justify-content:center;padding-top:120px}
+  #s1 h1{font-size:clamp(30px,7.2vw,54px)}
+  #s1 .kicker{margin-bottom:22px}
+  #s1 .slogan{margin-top:36px;padding:13px 24px}
+  #s1 .slogan .no{font-size:18px}
+  #s1 .slogan .rest{font-size:15px}
+
+  /* ---- общие двухколоночные → одна колонка ---- */
+  #s2 .grid,#s3 .grid,#s8 .grid{grid-template-columns:1fr;gap:24px}
+  #s2 .figwrap,#s3 .figwrap,#s8 .figwrap{
+    display:flex;align-items:center;justify-content:center;max-height:none}
+
+  /* ---- s2 спикер: фото убираем, текст уходит наверх экрана ---- */
+  #s2 .figwrap{display:none}
+  #s2 h1{font-size:42px;margin:6px 0 20px}
+  #s2 ul{gap:13px}
+  #s2 li{font-size:18px;gap:13px}
+  #s2 li .ck{width:23px;height:23px}
+
+  /* ---- s3 на мобайле: только текст (видео уехало на s3v) ---- */
+  #s3 .figwrap{display:none}
+  #s3 h1{font-size:58px;margin:8px 0 0}
+
+  /* ---- s3v: отдельный мобильный экран — крупное видео ---- */
+  #s3v{align-items:center}
+  #s3v .inner{display:flex;flex-direction:column;align-items:center;text-align:center}
+  #s3v .eyebrow{margin-bottom:4px}
+  #s3v .vstage{margin-top:20px;display:flex;justify-content:center;width:100%}
+  #s3v .vframe{position:relative;top:auto;bottom:auto;left:auto;transform:none;width:80vw;max-width:360px;height:auto;aspect-ratio:9/16;border-radius:26px}
+  #s3v .vplay{width:64px;height:64px}
+  #s3v .vplay svg{width:26px;height:26px}
+  #s3v .vsound{width:42px;height:42px;right:11px;bottom:11px}
+  #s3v .vsound svg{width:18px;height:18px}
+  #s3v .vhint{margin-top:18px;font-size:14px;color:var(--mut);font-weight:600}
+  #s3 .lead{font-size:18px;margin-top:22px;max-width:none}
+  #s3 .lead+.lead{margin-top:15px}
+
+  /* ---- s4 карусель ---- */
+  #s4 h1{font-size:40px}
+  #s4 .carousel{height:62svh;min-height:400px;margin-top:12px}
+  #s4 .cstep{width:min(78vw,440px);padding:30px 26px}
+  #s4 .cstep .n{width:52px;height:52px;font-size:22px;margin-bottom:18px}
+  #s4 .cstep h3{font-size:25px;margin-bottom:12px}
+  #s4 .cstep p{font-size:18px}
+  #s4 .cstep .out{font-size:16px}
+  #s4 .cnav{margin-top:16px;gap:20px}
+  #s4 .cnav button{width:46px;height:46px;font-size:18px}
+
+  /* ---- s4b Супермозг с руками ---- */
+  #s4b .grid{grid-template-columns:1fr;gap:16px}
+  #s4b h1{font-size:42px;margin:4px 0 0}
+  #s4b .cva-fig{height:34svh;max-height:none;order:-1}
+  #s4b .cva-line{font-size:19px;margin-top:18px;max-width:none;min-height:92px}
+  #s4b .cva-btn{font-size:17px;padding:15px 26px}
+  #s4b .cva-verdict{font-size:22px;margin-top:20px}
+
+  /* ---- s5 таблица: показываем только активную колонку (lbl + выбранная) ---- */
+  #s5 h1{font-size:42px}
+  #s5 .head{margin-bottom:16px}
+  #s5 .toggle{margin:14px 0 18px}
+  #s5 .toggle button{font-size:15px;padding:11px 22px}
+  #s5 .def{font-size:18px;min-height:0;margin-bottom:16px}
+  #s5 td{padding:13px 12px;font-size:16px}
+  #s5 .lbl{font-size:14px;width:38%}
+  #s5 .cp,#s5 .cs{width:auto}
+  #s5[data-state="skill"] .cp{display:none}
+  #s5[data-state="prompt"] .cs{display:none}
+  #s5[data-state="skill"] .cs,#s5[data-state="prompt"] .cp{opacity:1}
+
+  /* ---- s6 IDE-проводник в одну колонку ---- */
+  #s6 h1{font-size:40px}
+  #s6 .head{margin-bottom:22px}
+  #s6 .sub{font-size:17px;margin-top:14px}
+  #s6 .ide{grid-template-columns:1fr;height:auto;min-height:0}
+  #s6 .tree{border-right:none;border-bottom:1px solid var(--line);max-height:30svh;font-size:14px}
+  #s6 .detail{padding:26px 24px}
+  #s6 .detail .fname{font-size:20px}
+  #s6 .detail .ftype{margin-bottom:18px}
+  #s6 .detail .fdesc{font-size:18px}
+  #s6 .counter{margin-top:18px;gap:26px}
+  #s6 .counter .c{font-size:24px}
+
+  /* ---- s7 три пути → стопка; на тач шаги показываем сразу ---- */
+  #s7 h1{font-size:40px}
+  #s7 .head{margin-bottom:24px}
+  #s7 .ways{grid-template-columns:1fr;gap:16px}
+  #s7 .way{padding:26px 24px}
+  #s7 .way .n{width:50px;height:50px;font-size:22px;margin-bottom:16px}
+  #s7 .way h3{font-size:24px}
+  #s7 .way .tag{margin-bottom:0}
+  /* интерактив сохраняем: закрытая карточка компактна, по тапу список раскрывается + шаги прорастают */
+  #s7 .way ul{min-height:0;max-height:0;overflow:hidden;transition:max-height .45s ease}
+  #s7 .way.open ul{max-height:360px;margin-top:24px}
+
+  /* ---- org ---- */
+  #org h1{font-size:40px}
+  #org .org-list{gap:14px;margin-top:24px}
+  #org .org-list li{font-size:17px;gap:13px}
+  #org .org-list li .tk{font-size:13px;padding:6px 8px;width:150px;text-align:center}
+  #org .org-note{font-size:16px;margin-top:24px}
+
+  /* ---- contract ---- */
+  #contract h1{font-size:42px}
+  #contract .lead{font-size:19px;margin-top:20px;max-width:none}
+  #contract .lead+.lead{margin-top:15px}
+
+  /* ---- poll / сборка / faq ---- */
+  #poll h1,#assemble h1,#faq h1{font-size:40px}
+
+  /* ---- task ---- */
+  #task h1{font-size:40px}
+  #task .head{margin-bottom:24px}
+  #task .promptbox{padding:32px 24px}
+  #task .promptbox p{font-size:18px}
+
+  /* ---- route ---- */
+  .routescreen h1{font-size:40px}
+  .routescreen .stepper{flex-direction:column;gap:14px;margin-top:28px}
+  .routescreen .rstep{min-width:0;padding:22px 22px}
+  .routescreen .rstep .rn{width:46px;height:46px;font-size:19px;margin-bottom:16px}
+  .routescreen .rstep h3{font-size:21px}
+  .routescreen .rarrow{display:none}
+
+  /* ---- neuro4 ---- */
+  #neuro4 h1{font-size:38px}
+  #neuro4 .sub{font-size:17px;margin-top:14px}
+  #neuro4 .ways{grid-template-columns:1fr;gap:14px;margin-top:24px}
+  #neuro4 .way{padding:26px 24px}
+  #neuro4 .way h3{font-size:24px}
+  #neuro4 .way p,#neuro4 .way .exmpl{font-size:16px}
+
+  /* ---- cmp ---- */
+  #cmp h1{font-size:38px}
+  #cmp .note{font-size:16px}
+  #cmp td,#cmp th{padding:12px 13px}
+  #cmp td{font-size:18px}
+  #cmp td.lbl{font-size:18px;width:auto}
+
+  /* ---- voice ---- */
+  #voice h1{font-size:42px}
+  #voice .lead{font-size:19px;margin-top:20px;max-width:none}
+  #voice .svcs{grid-template-columns:1fr;gap:16px;margin-top:24px}
+  #voice .svc{padding:24px 22px}
+  #voice .svc .sn{font-size:26px}
+  #voice .svc p{font-size:18px}
+  #voice .svc .sprice{font-size:19px}
+
+  /* ---- s8 финал: QR не нужен (со своего экрана не сканируется) → крупная кнопка-ссылка ---- */
+  #s8 .figwrap{height:26svh;order:2}
+  #s8 .figwrap img{height:100%}
+  #s8 h1{font-size:46px}
+  #s8 .qr{display:none}
+  #s8 .qrwrap{margin-top:22px}
+  #s8 .cta-sub{font-size:19px}
+  #s8 .tg-btn{display:inline-flex;margin-top:22px}
+  #s8 .chan{font-size:16px}
+}
+
+/* ТЕЛЕФОН — ещё компактнее */
+@media (max-width:540px){
+  :root{--pad:18px}
+  .dots{display:none}
+  .screen{padding:78px var(--pad) 62px}
+
+  .logos .logo-dv{height:34px}
+  .logos .logo-ms{height:21px}
+
+  #s1 h1{font-size:clamp(25px,7.8vw,40px)}
+  #s2 .figwrap{height:25svh}
+  #s2 h1{font-size:36px}
+  #s3 .figwrap{height:29svh}
+  #s3 h1{font-size:46px}
+  #s4 .cstep{width:min(84vw,420px);padding:26px 22px}
+  #s4 .cstep h3{font-size:23px}
+  #org h1,#poll h1,.routescreen h1,#neuro4 h1,#cmp h1,#assemble h1,#faq h1{font-size:34px}
+  #s5 h1,#s6 h1,#s7 h1{font-size:36px}
+  #contract h1,#task h1,#voice h1,#s8 h1{font-size:40px}
+  #s8 .qrwrap{flex-direction:column;align-items:flex-start;gap:18px}
+  #s8 .qr{width:188px;height:188px}
+}
+
+/* ===================================================================== */
+/* ===== МОТОРИКА: reveal на скролле + прогресс маршрута (Emil) ========= */
+/* ===================================================================== */
+@media (prefers-reduced-motion: no-preference){
+  /* — общий reveal статичных экранов: один «язык» движения — */
+  [data-reveal]{opacity:0;transform:translateY(14px);
+    transition:opacity .55s cubic-bezier(.23,1,.32,1),transform .55s cubic-bezier(.23,1,.32,1);
+    transition-delay:var(--rd,0ms);will-change:opacity,transform}
+  [data-reveal].in{opacity:1;transform:none}
+
+  /* — маршрут: каскад шагов слева-направо + «приземление» активного — */
+  .routescreen .stepper>*{opacity:0}
+  .routescreen .stepper>.rin{animation:rRise .5s cubic-bezier(.23,1,.32,1) both}
+  @keyframes rRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .routescreen .rstep.active.rland .rn{animation:rLand .55s cubic-bezier(.34,1.45,.5,1) .04s both}
+  @keyframes rLand{0%{transform:scale(.9)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+  .routescreen .rstep.active .now{opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
+  .routescreen .rstep.active.rland .now{opacity:1;transform:none}
+}
+.routescreen .rarrow{transition:color .4s ease}
+.routescreen .rarrow.rpassed{color:var(--orange)}
+
+/* ===================================================================== */
+/* ===== ТОЧЕЧНЫЕ АКЦЕНТЫ ============================================== */
+/* ===================================================================== */
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* s3 — подпись «Прохор» дорисовывается на reveal */
+@media (prefers-reduced-motion: no-preference){
+  #s3 .uline svg path{stroke-dasharray:340;stroke-dashoffset:340}
+  #s3 h1[data-reveal].in .uline svg path{animation:draw .7s cubic-bezier(.23,1,.32,1) .3s forwards}
+}
+
+/* task — три оранжевых вехи (нейрочаты → ассистенты → агенты) загораются по очереди */
+#task .mst{color:var(--orange);font-weight:700}
+@media (prefers-reduced-motion: no-preference){
+  #task .promptbox[data-reveal] .mst{color:var(--ink);transition:color .5s ease,text-shadow .5s ease}
+  #task .promptbox[data-reveal].in .mst{color:var(--orange);text-shadow:0 0 22px rgba(254,153,1,.35)}
+  #task .promptbox[data-reveal].in .mst:nth-of-type(1){transition-delay:.30s}
+  #task .promptbox[data-reveal].in .mst:nth-of-type(2){transition-delay:.62s}
+  #task .promptbox[data-reveal].in .mst:nth-of-type(3){transition-delay:.94s}
+}
+
+/* chatdoes — галочки «Агент» всплывают сразу после своей строки */
+@media (prefers-reduced-motion: no-preference){
+  #chatdoes .cdtable tr[data-reveal] .yes .ic{display:inline-block;transform:scale(.5);opacity:0;
+    transition:transform .42s cubic-bezier(.34,1.5,.5,1) .22s,opacity .3s ease .22s}
+  #chatdoes .cdtable tr[data-reveal].in .yes .ic{transform:scale(1);opacity:1}
+}
+
+/* voice + getcc — подъём карточки на наведение (для показа со сцены) */
+@media (hover:hover) and (pointer:fine){
+  #voice .svc{transition:transform .3s cubic-bezier(.23,1,.32,1),border-color .3s ease,background .3s ease}
+  #voice .svc:hover{transform:translateY(-4px);border-color:var(--orange);background:rgba(254,153,1,.05)}
+  #getcc .ccway{transition:transform .3s cubic-bezier(.23,1,.32,1),border-color .3s ease,background .3s ease}
+  #getcc .ccway:hover{transform:translateY(-4px);border-color:var(--orange);background:rgba(254,153,1,.05)}
+}
+/* getcc — карта №3 (VS Code · 90%) тихо подсвечена как основная */
+#getcc .ccway:nth-child(3){border-color:rgba(254,153,1,.4);background:rgba(254,153,1,.045)}
+
+/* contract — меловая тропинка «выползает» под панчлайном */
+#contract .pathdoodle{position:absolute;left:var(--pad);bottom:8%;width:min(840px,60vw);height:auto;z-index:1;pointer-events:none}
+#contract .pathdoodle path{stroke:rgba(255,255,255,.55);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+@media (prefers-reduced-motion: no-preference){
+  #contract .pathdoodle{opacity:0;transition:opacity .35s ease}
+  #contract .pathdoodle.in{opacity:1}
+  #contract .pathdoodle path{stroke-dasharray:1;stroke-dashoffset:1}
+  #contract .pathdoodle.in path{animation:draw 1.7s cubic-bezier(.23,1,.32,1) .15s forwards}
+}
+@media (max-width:960px){ #contract .pathdoodle{display:none} }
+
+/* ============ SKILL SCREENS · Блок 3 (4 персоны) ============ */
+.skillscreen .sk-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:44px;align-items:center}
+.skillscreen .sk-portrait{position:relative;height:86vh;max-height:900px;display:flex;align-items:center;justify-content:center}
+.skillscreen .sk-portrait img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.skillscreen .sk-ph{flex-direction:column;gap:14px;text-align:center}
+.skillscreen .sk-ph svg{width:120px;height:120px;color:var(--orange);opacity:.5}
+.skillscreen .sk-ph .sk-ph-name{font-family:'Unbounded';font-weight:800;font-size:30px;color:var(--mut);line-height:1}
+.skillscreen .sk-ph .sk-ph-note{display:none}
+.skillscreen h1.big{font-size:62px;margin:14px 0 0;line-height:1.0}
+.skillscreen h1.big .sk-role{display:block;color:var(--orange);font-size:32px;font-weight:700;margin-top:8px}
+.skillscreen .sk-tag{display:inline-block;margin-top:20px;font-family:'JetBrains Mono';font-size:13px;letter-spacing:.08em;
+  color:var(--orange);border:1px solid rgba(254,153,1,.4);background:rgba(254,153,1,.06);padding:8px 16px;border-radius:999px}
+.skillscreen .sk-do{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:14px;max-width:700px}
+.skillscreen .sk-do li{position:relative;padding-left:28px;font-size:21px;line-height:1.45;color:#d7d5cf;font-weight:500}
+.skillscreen .sk-do li::before{content:"";position:absolute;left:0;top:10px;width:10px;height:10px;border-radius:50%;background:var(--orange)}
+.skillscreen .sk-out{margin-top:30px;max-width:700px;background:rgba(254,153,1,.06);border-left:3px solid var(--orange);
+  border-radius:0 14px 14px 0;padding:18px 24px;font-size:22px;line-height:1.45;color:#fff;font-weight:600}
+.skillscreen .sk-out b{color:var(--orange)}
+.skillscreen .sk-out .sk-out-l{display:block;font-family:'JetBrains Mono';font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;font-weight:400}
+@media (max-width:1240px){ .skillscreen h1.big{font-size:52px} .skillscreen h1.big .sk-role{font-size:28px} }
+@media (max-width:960px){
+  .skillscreen .sk-grid{grid-template-columns:1fr;gap:22px}
+  .skillscreen .sk-fig{order:-1}
+  .skillscreen .sk-portrait{height:46svh;max-height:none}
+  .skillscreen h1.big{font-size:38px}
+  .skillscreen h1.big .sk-role{font-size:22px;margin-top:6px}
+  .skillscreen .sk-tag{margin-top:16px}
+  .skillscreen .sk-do{margin-top:20px;gap:11px}
+  .skillscreen .sk-do li{font-size:17px;padding-left:24px}
+  .skillscreen .sk-do li::before{top:8px;width:8px;height:8px}
+  .skillscreen .sk-out{font-size:18px;margin-top:22px;padding:15px 18px}
+  .skillscreen .sk-ph svg{width:74px;height:74px}
+  .skillscreen .sk-ph .sk-ph-name{font-size:30px}
+}
+
+/* ============ БЛОК 3/4 · СХЕМЫ И ДЕМО (День 2) ============ */
+/* компактный степпер для 4 шагов (5 ячеек) */
+.routescreen .stepper .rstep{min-width:150px;padding:26px 20px}
+.routescreen .stepper .rstep .rn{width:50px;height:50px;font-size:20px;margin-bottom:18px}
+.routescreen .stepper .rstep h3{font-size:20px}
+.routescreen .stepper .rarrow{padding:0 9px;font-size:22px}
+
+/* общие атомы схема-экранов */
+.flowscreen h1.big,.auditscreen h1.big,.chanscreen h1.big,.cdscreen h1.big{font-size:50px;margin:12px 0 0;line-height:1.05}
+.flowscreen .sk-role,.auditscreen .sk-role,.chanscreen .sk-role,.cdscreen .sk-role{display:block;color:var(--orange);font-size:25px;font-weight:700;margin-top:8px}
+.chanscreen .sk-tag,.cdscreen .sk-tag{display:inline-block;margin-top:18px;font-family:'JetBrains Mono';font-size:13px;letter-spacing:.08em;color:var(--orange);border:1px solid rgba(254,153,1,.4);background:rgba(254,153,1,.06);padding:8px 16px;border-radius:999px}
+.fl-arrow{flex:none;align-self:center;color:var(--mut2);font-size:30px;padding:0 16px}
+
+/* 19 · конвейер литературного */
+.flowscreen .flow{display:flex;align-items:stretch;gap:0;margin-top:38px}
+.flow .phase{flex:1 1 0;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px 22px;display:flex;flex-direction:column}
+.flow .ph-l{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:16px}
+.flow .steps{flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center}
+.flow .step{display:flex;gap:14px;align-items:flex-start}
+.flow .sn{flex:none;width:34px;height:34px;border-radius:50%;background:rgba(254,153,1,.12);border:1px solid rgba(254,153,1,.45);color:var(--orange);font-family:'Unbounded';font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.flow .st-b{display:flex;flex-direction:column;gap:2px}
+.flow .st-b b{font-size:19px;color:#fff;font-weight:700;line-height:1.18}
+.flow .st-b i{font-style:normal;font-size:14.5px;color:var(--mut);line-height:1.3}
+.flow-foot{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.flow-bg{font-size:16px;color:var(--mut)}
+.flow-bg b{color:#cbc9c3;font-weight:600}
+.flow-out{font-size:20px;color:#fff;font-weight:600;background:rgba(254,153,1,.06);border-left:3px solid var(--orange);border-radius:0 14px 14px 0;padding:14px 22px}
+
+/* 20 · постовик + аудитор */
+.auditscreen .audit{margin-top:34px}
+.auditscreen .au-flow{display:flex;align-items:stretch;gap:0}
+.au-flow .au-node{flex:1 1 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;display:flex;flex-direction:column;gap:6px}
+.au-flow .au-node.au-hot{border-color:rgba(254,153,1,.4);background:rgba(254,153,1,.06)}
+.au-node .au-cap{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.au-node .au-cap.au-on{color:var(--orange)}
+.au-node b{font-size:20px;color:#fff;font-weight:700;line-height:1.18}
+.au-node i{font-style:normal;font-size:14.5px;color:var(--mut);line-height:1.35}
+.auditscreen .crits{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
+.crits .crit{background:rgba(254,153,1,.05);border:1px solid rgba(254,153,1,.25);border-radius:14px;padding:14px}
+.crits .crit b{display:block;font-size:16px;color:var(--orange);font-weight:700;margin-bottom:4px}
+.crits .crit i{font-style:normal;font-size:13px;color:var(--mut);line-height:1.3}
+
+/* 21 · анализ канала (демо) */
+.chanscreen .chan{display:flex;align-items:center;gap:0;margin-top:30px}
+.chan .chan-feed{flex:1 1 0;display:flex;flex-direction:column;gap:12px}
+.chan .chan-bar{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono';font-size:14px;color:var(--mut);margin-bottom:4px}
+.chan .chan-av{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.14);flex:none}
+.chan .post{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.chan .post p{font-size:18px;color:#e7e5df;font-weight:500}
+.chan .post .pm{flex:none;font-family:'JetBrains Mono';font-size:13px;color:var(--orange);white-space:nowrap}
+.chanscreen .chan-ins{flex:1 1 0}
+.chanscreen .chan-ins .au-cap{display:block;font-family:'JetBrains Mono';font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:16px}
+.chanscreen .sk-do{list-style:none;display:flex;flex-direction:column;gap:15px}
+.chanscreen .sk-do li{position:relative;padding-left:28px;font-size:21px;line-height:1.4;color:#d7d5cf;font-weight:500}
+.chanscreen .sk-do li b{color:var(--orange)}
+.chanscreen .sk-do li::before{content:"";position:absolute;left:0;top:9px;width:10px;height:10px;border-radius:50%;background:var(--orange)}
+
+/* 25 · Claude Design (браузер) */
+.cdscreen .cd-grid{display:grid;grid-template-columns:1fr 1.12fr;gap:50px;align-items:center}
+.cdscreen .cd-lead{font-size:21px;line-height:1.5;color:#cbc9c3;margin-top:22px;max-width:520px}
+.cdscreen .sk-out{margin-top:24px;max-width:560px;background:rgba(254,153,1,.06);border-left:3px solid var(--orange);border-radius:0 14px 14px 0;padding:16px 22px;font-size:19px;line-height:1.45;color:#fff;font-weight:600}
+.cdscreen .sk-out b{color:var(--orange)}
+.cdscreen .sk-out .sk-out-l{display:block;font-family:'JetBrains Mono';font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;font-weight:400}
+.cdscreen .browser{display:block;position:relative;text-decoration:none;background:#101012;border-radius:14px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12);transition:transform .35s cubic-bezier(.23,1,.32,1)}
+.cdscreen .br-shot{display:block;width:100%;height:auto}
+.cdscreen .br-open{position:absolute;right:16px;bottom:16px;font-family:'Unbounded';font-weight:700;font-size:13px;color:#0a0a0b;background:var(--orange);padding:9px 16px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.cdscreen .br-bar{display:flex;align-items:center;gap:8px;background:#ededed;padding:12px 16px}
+.cdscreen .br-dot{width:11px;height:11px;border-radius:50%;background:#cfcfcf;flex:none}
+.cdscreen .br-url{margin-left:14px;font-family:'JetBrains Mono';font-size:13px;color:#888;background:#fff;padding:6px 14px;border-radius:8px;flex:1}
+.cdscreen .br-view{background:#fff;color:#0a0a0b;padding:44px 42px 50px}
+.cdscreen .br-eyebrow{font-family:'JetBrains Mono';font-size:14px;color:#777;letter-spacing:.04em;margin-bottom:16px}
+.cdscreen .br-h1{font-family:'Unbounded';font-weight:800;font-size:44px;line-height:1.0;color:#111;letter-spacing:-.01em}
+.cdscreen .br-sub{font-size:18px;color:#555;margin-top:14px}
+.cdscreen .br-tags{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.cdscreen .br-tags span{font-family:'JetBrains Mono';font-size:13px;color:#333;border:1px solid #ccc;border-radius:999px;padding:7px 16px}
+.cdscreen .br-cd{margin-top:28px;display:inline-block;font-family:'Unbounded';font-weight:700;font-size:14px;color:#fff;background:#0a0a0b;padding:11px 20px;border-radius:999px}
+@media (hover:hover) and (pointer:fine){ .cdscreen .browser:hover{transform:translateY(-6px)} }
+
+/* адаптив схема-экранов */
+@media (max-width:1240px){
+  .flowscreen h1.big,.auditscreen h1.big,.chanscreen h1.big,.cdscreen h1.big{font-size:42px}
+  .cdscreen .br-h1{font-size:38px}
+}
+@media (max-width:1100px){
+  .auditscreen .crits{grid-template-columns:repeat(3,1fr)}
+  .cdscreen .cd-grid{grid-template-columns:1fr;gap:30px}
+}
+@media (max-width:760px){
+  .flowscreen .flow{flex-direction:column}
+  .auditscreen .au-flow{flex-direction:column}
+  .chanscreen .chan{flex-direction:column;align-items:stretch}
+  .flow .fl-arrow,.au-flow .fl-arrow,.chan .fl-arrow{align-self:center;transform:rotate(90deg);padding:10px 0}
+  .auditscreen .crits{grid-template-columns:1fr 1fr}
+  .flowscreen h1.big,.auditscreen h1.big,.chanscreen h1.big,.cdscreen h1.big{font-size:32px}
+  .flow .st-b b,.au-node b{font-size:17px}
+  .chanscreen .sk-do li{font-size:17px}
+  .cdscreen .br-view{padding:30px 26px 34px}
+  .cdscreen .br-h1{font-size:30px}
+}
+/* ---------- 29 · все скиллы — открытый код на GitHub ---------- */
+#skills-all .inner{display:flex;flex-direction:column;gap:32px;width:100%}
+#skills-all h1.big .o{color:var(--orange)}
+#skills-all .sa-wrap{display:grid;grid-template-columns:1.5fr .8fr;gap:58px;align-items:center;width:100%}
+#skills-all .sa-list{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px}
+#skills-all .sa-item{padding:15px 20px;border:1px solid var(--line);border-radius:16px;background:var(--card);transition:.25s}
+#skills-all .sa-item:hover{border-color:rgba(254,153,1,.55);transform:translateY(-2px)}
+#skills-all .sa-item .nm{font-family:'Unbounded';font-weight:700;font-size:20px;line-height:1.1;color:var(--ink)}
+#skills-all .sa-item .rl{margin-top:6px;font-size:14px;line-height:1.3;color:var(--mut)}
+#skills-all .sa-qr{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+#skills-all .sa-qr .qr{background:#fff;padding:18px;border-radius:20px;width:236px;height:236px;flex:none;box-shadow:0 0 0 1px rgba(254,153,1,.5),0 24px 70px rgba(0,0,0,.6)}
+#skills-all .sa-qr .qr img{width:100%;height:100%;display:block;image-rendering:pixelated}
+#skills-all .sa-qr .cap{font-size:20px;line-height:1.4;color:#cfcdc7;font-weight:600}
+#skills-all .sa-qr .cap b{color:var(--orange)}
+#skills-all .sa-qr .url{font-family:'JetBrains Mono';font-size:12.5px;letter-spacing:.03em;color:var(--mut)}
+@media (max-width:1240px){ #skills-all h1.big{font-size:46px} #skills-all .sa-item .nm{font-size:18px} }
+@media (max-width:960px){
+  #skills-all .sa-wrap{grid-template-columns:1fr;gap:26px}
+  #skills-all .sa-qr{order:-1}
+  #skills-all .sa-qr .qr{width:188px;height:188px;padding:14px}
+}
+@media (max-width:540px){
+  #skills-all .sa-list{grid-template-columns:1fr;gap:10px}
+  #skills-all .sa-item{padding:12px 16px}
+  #skills-all .sa-item .nm{font-size:17px}
+  #skills-all .sa-qr .cap{font-size:17px}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<nav class="dots" id="dots"></nav>
+
+<!-- ===================== 01 · TITLE ===================== -->
+<section class="screen" id="s1" data-reveal-step="110">
+  <div class="glow" style="width:1300px;height:1300px;left:50%;top:46%;transform:translate(-50%,-50%)"></div>
+  <div class="fx-doodles" data-lottie-key="doodles" data-lottie-once="1" aria-hidden="true"></div>
+  <div class="fx-doodles fx-sparks" data-lottie-key="sparks" data-lottie-loop="1" aria-hidden="true"></div>
+
+  <div class="inner">
+    <span class="eyebrow kicker" data-reveal>только практика · только хардкор</span>
+    <h1 class="big" data-reveal>Как перестать пользоваться нейрочатами и&nbsp;начать создавать <span class="o pulse">AI-сотрудников</span> для себя и&nbsp;в&nbsp;команду под любую задачу и&nbsp;процесс</h1>
+    <div class="slogan" data-reveal>
+      <span class="no">NO SLIDES</span>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">01</span><span>листай ↓</span></div>
+</section>
+
+<!-- ===================== 02 · SPEAKER ===================== -->
+<section class="screen" id="s2">
+  <div class="glow" style="width:1000px;height:1000px;left:-8%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="grid">
+      <div class="figwrap" data-reveal><img class="figure" src="assets/timur-speaker-cut.png" alt="Тимур Угулава"></div>
+      <div>
+        <span class="eyebrow" data-reveal>Обо мне</span>
+        <h1 class="big" data-reveal>Тимур Угулава</h1>
+        <ul>
+          <li><span class="lottie-check" data-lottie-key="check" aria-hidden="true"></span><span>Руковожу <a class="hl" href="https://www.media-sfera.com/" target="_blank" rel="noopener">Медиасферой</a></span></li>
+          <li><span class="lottie-check" data-lottie-key="check" aria-hidden="true"></span><span>Внедряю <b class="hl">нейроночки</b> в процессы</span></li>
+          <li><span class="lottie-check" data-lottie-key="check" aria-hidden="true"></span><span>Веду <a class="hl" href="https://t.me/+z7t-uQJfP-U4MDYy" target="_blank" rel="noopener">«Тимур Угулава»</a> в тележке</span></li>
+          <li><span class="lottie-check" data-lottie-key="check" aria-hidden="true"></span><span>Консультирую и обучаю <b class="hl">про ИИ</b></span></li>
+          <li><span class="lottie-check" data-lottie-key="check" aria-hidden="true"></span><span>Блогерствую <a class="hl" href="https://dzen.ru/smart_travels" target="_blank" rel="noopener">про тревел</a> восьмой год</span></li>
+          <li><span class="lottie-check" data-lottie-key="check" aria-hidden="true"></span><span>Беру интервью у <a class="hl" href="https://www.youtube.com/@bezilluzii" target="_blank" rel="noopener">интересных людей</a></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">02</span><span>обо мне</span></div>
+</section>
+
+<!-- ===================== 03 · ОРГИНФОРМАЦИЯ ===================== -->
+<section class="screen" id="org">
+  <div class="glow" style="width:1000px;height:1000px;left:-8%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Как работаем</span>
+      <h1 class="big">Самое важное про сегодня</h1>
+    </div>
+    <ul class="org-list">
+      <li data-reveal><span class="tk">10:00–18:00</span><span>Работаем весь день. Нужен дополнительный перерыв — <b>смело говорите</b></span></li>
+      <li data-reveal><span class="tk">11:30–12:00</span><span>Кофе-брейк</span></li>
+      <li data-reveal><span class="tk">13:30–14:30</span><span>Обед</span></li>
+      <li data-reveal><span class="tk">16:00–16:30</span><span>Кофе-брейк</span></li>
+      <li data-reveal><span class="tk">вопросы</span><span>Можно и нужно задавать <b>в любой момент</b> — не ждите паузы<br>У нас человеческое общение,<br>поэтому расслабляемся и <span class="o">кайфуем от полезностей</span></span></li>
+    </ul>
+  </div>
+  <div class="slidemark"><span class="num">03</span><span>как работаем</span></div>
+</section>
+
+<!-- ===================== 05 · И ЕЩЁ ОДИН МОМЕНТ ===================== -->
+<section class="screen" id="contract" data-reveal-step="150">
+  <div class="glow" style="width:1000px;height:1000px;right:-6%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">И ещё один момент</span>
+      <h1 class="big">Практика и&nbsp;польза<br>— <span style="color:var(--orange)">в&nbsp;приоритете</span></h1>
+    </div>
+    <p class="lead" data-reveal>Если надо будет свернуть с&nbsp;маршрута в&nbsp;лес<br>— <span class="hl">свернём и&nbsp;сделаем новую&nbsp;тропинку!</span></p>
+  </div>
+  <svg class="pathdoodle" data-reveal viewBox="0 0 760 150" fill="none" preserveAspectRatio="xMinYMid meet" aria-hidden="true">
+    <path pathLength="1" d="M14 100 C80 60 132 132 214 102 C292 74 330 128 410 100 C492 72 540 126 620 98 C682 78 716 70 752 60"/>
+  </svg>
+  <div class="slidemark"><span class="num">04</span><span>и ещё момент</span></div>
+</section>
+
+<!-- ===================== 04 · УТРЕННЯЯ ГИМНАСТИКА ===================== -->
+<section class="screen" id="poll" data-reveal-step="120">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-14%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <span class="eyebrow" data-reveal>Утренняя гимнастика</span>
+    <h1 class="big" data-reveal>Кто пользуется агентами типа<br><span style="color:var(--orange)">Claude&nbsp;Code / Codex / Antigravity?</span></h1>
+  </div>
+  <div class="slidemark"><span class="num">05</span><span>гимнастика</span></div>
+</section>
+
+<!-- ЗАЧЕМ МЫ ЗДЕСЬ · задача дня -->
+<section class="screen" id="task" data-reveal-step="140">
+  <div class="glow" style="width:1000px;height:1000px;right:-4%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Зачем мы здесь</span>
+      <h1 class="big">От нейрочатов к&nbsp;<span style="color:var(--orange)">своим ассистентам</span></h1>
+    </div>
+    <div class="promptbox" data-reveal>
+      <div class="plabel">задача дня</div>
+      <p>Сегодня я <b>за ручку</b> проведу вас весь путь: от привычных <span class="mst">нейрочатов</span> к&nbsp;созданию <span class="mst">собственных ассистентов</span> и&nbsp;работе с&nbsp;<span class="mst">агентами</span> (на&nbsp;примере Claude&nbsp;Code).</p>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">06</span><span>задача дня</span></div>
+</section>
+
+<!-- ===================== 05 · PROHOR ===================== -->
+<section class="screen" id="s3">
+  <div class="glow" style="width:920px;height:920px;left:-6%;top:58%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="grid">
+      <div>
+        <span class="eyebrow" data-reveal>Знакомьтесь</span>
+        <h1 class="big" data-reveal>Это <span class="uline">Прохор<svg viewBox="0 0 320 26" fill="none" preserveAspectRatio="none"><path d="M4 16C70 6 250 4 316 12" stroke="#fe9901" stroke-width="7" stroke-linecap="round"/></svg></span></h1>
+        <p class="lead" data-reveal>Маркетолог-нейросотрудник для рынка недвижимости. Знает квартирографию, эскроу, ДДУ, стадии стройки и <span class="hl">214-ФЗ</span>.</p>
+        <p class="lead" data-reveal>Спорит и отстаивает своё мнение, если решение слабое. <span class="hl">Дружелюбен, но на шею себе сесть не даст.</span></p>
+        <p class="lead" data-reveal>Изучает рынок и пишет рекламные стратегии под ключ: <span class="hl">от аудита до креатива.</span></p>
+      </div>
+      <div class="figwrap" id="figSlot">
+        <div class="vframe">
+          <video id="proVid" src="assets/prohor-talk.mp4" muted loop playsinline preload="auto" poster="assets/prohor-poster.jpg"></video>
+          <button class="vplay" id="vPlay" type="button" aria-label="Воспроизвести"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg></button>
+          <button class="vsound" id="vSound" type="button" title="Включить звук" aria-label="Включить звук"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">07</span><span>герой</span></div>
+</section>
+
+<!-- ============ 03b · ЖИВОЙ ПРОХОР (только мобайл) ============ -->
+<section class="screen mobonly" id="s3v">
+  <div class="glow" style="width:760px;height:760px;left:50%;top:42%;transform:translate(-50%,-50%)"></div>
+  <div class="inner">
+    <span class="eyebrow" data-reveal>Привет, я Прохор.</span>
+    <div class="vstage" id="figSlotM"></div>
+  </div>
+</section>
+
+<!-- ===================== 04 · PIPELINE ===================== -->
+<section class="screen" id="s4">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-10%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Что делает Прохор</span>
+      <h1 class="big">Кампания под ключ<br><span class="o">5 этапов</span></h1>
+    </div>
+    <div class="carousel" id="carousel">
+      <div class="cstep"><div class="n">1</div><div class="step-icon" data-lottie-key="icon-analiz" data-lottie-manual="1" aria-hidden="true"></div><h3>Анализ объекта</h3><p>Паспорт объекта и реальные конкуренты</p><div class="out">→ кто продаётся рядом прямо сейчас</div></div>
+      <div class="cstep"><div class="n">2</div><div class="step-icon" data-lottie-key="icon-audience" data-lottie-manual="1" aria-hidden="true"></div><h3>Аудитория</h3><p>Сегменты ЦА, триггеры, барьеры</p><div class="out">→ темп продаж и приоритет сегментов</div></div>
+      <div class="cstep"><div class="n">3</div><div class="step-icon" data-lottie-key="icon-concept" data-lottie-manual="1" aria-hidden="true"></div><h3>Концепция</h3><p>Уникальный tone of voice и отстройка от конкурентов</p><div class="out">→ стержень и ключевые сообщения</div></div>
+      <div class="cstep"><div class="n">4</div><div class="step-icon" data-lottie-key="icon-text" data-lottie-manual="1" aria-hidden="true"></div><h3>Тексты</h3><p>Объявления + проверка модерации и 214-ФЗ</p><div class="out">→ готово к запуску, юрчек пройден</div></div>
+      <div class="cstep"><div class="n">5</div><div class="step-icon" data-lottie-key="icon-visual" data-lottie-manual="1" aria-hidden="true"></div><h3>Визуалы</h3><p>Генерация под форматы площадок</p><div class="out">→ баннеры 1:1, 4:5, 9:16, 16:9</div></div>
+    </div>
+    <div class="cnav">
+      <button onclick="cmove(-1)" aria-label="предыдущий">◄</button>
+      <div class="cdots" id="cdots"></div>
+      <button onclick="cmove(1)" aria-label="следующий">►</button>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">08</span><span>пайплайн</span></div>
+</section>
+
+<!-- ПЕРЕИСПОЛЬЗУЕМЫЙ СТЕППЕР: для каждого блока дня переноси класс .active на нужный .rstep -->
+<section class="screen routescreen" id="route">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-10%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Маршрут дня</span>
+      <h1 class="big">Наш план <span style="color:var(--orange)">на сегодня</span></h1>
+    </div>
+    <div class="stepper">
+      <div class="rstep active"><div class="rn">1</div><h3>Знакомство<br>с нейросетями</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">2</div><h3>Промпты<br>и скиллы</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">3</div><h3>Создание<br>AI-помощников</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">4</div><h3>Визуал</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">★</div><h3>Финал Q&amp;A</h3><div class="now">Мы здесь</div></div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">09</span><span>маршрут дня</span></div>
+</section>
+
+<!-- МОИ СЕРВИСЫ · таблица -->
+<section class="screen" id="cmp" data-reveal-step="55">
+  <div class="glow" style="width:900px;height:900px;left:-10%;top:30%"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Мои сервисы</span>
+      <h1 class="big">Чем пользуюсь <span style="color:var(--orange)">в работе</span></h1>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Сервис</th>
+            <th>Стоимость</th>
+            <th>Бесплатный доступ</th>
+            <th>Под какие задачи</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-reveal>
+            <td class="lbl">Claude</td>
+            <td>$20 / $100 / $200</td>
+            <td><b style="color:var(--orange)">есть</b></td>
+            <td class="task">90% работы здесь. Чат и агент-оркестратор под все типы задач.</td>
+          </tr>
+          <tr data-reveal>
+            <td class="lbl">Gemini</td>
+            <td>$20 / $100 / $200</td>
+            <td><b style="color:var(--orange)">есть</b></td>
+            <td class="task">Бесплатная версия в AI Studio для быстрых разовых задач. Работа с графикой в Nano Banana (API).</td>
+          </tr>
+          <tr data-reveal>
+            <td class="lbl">NotebookLM</td>
+            <td>В рамках подписки на Gemini</td>
+            <td><b style="color:var(--orange)">есть</b></td>
+            <td class="task">Ответы по своим документам со ссылками, исследования по источникам.</td>
+          </tr>
+          <tr data-reveal>
+            <td class="lbl">Perplexity</td>
+            <td>$20 / $200</td>
+            <td><b style="color:var(--orange)">есть</b></td>
+            <td class="task">Поиск со свежими ссылками, факт-чек и проверка актуальности.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">10</span><span>мои сервисы</span></div>
+</section>
+
+<!-- ===================== 12 · СЕРВИСЫ ГОВОРИЛЬНИ ===================== -->
+<section class="screen" id="voice">
+  <div class="glow" style="width:1000px;height:1000px;right:2%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Лайфхак</span>
+      <h1 class="big">Сервисы <span style="color:var(--orange)">говорильни</span></h1>
+    </div>
+    <p class="lead" data-reveal>Отдельно рекомендую <b>сервисы голосового ввода</b> — сам пользуюсь много и каждый день. Говорить быстрее, чем печатать, а нейронке всё равно.</p>
+    <div class="svcs">
+      <div class="svc" data-reveal>
+        <div class="sn">① Monologue</div>
+        <div class="splat">Mac · iOS</div>
+        <p>Мой фаворит — быстрый и без нареканий. Бесплатная версия ограничена.</p>
+        <div class="sprice"><b>$10</b> / мес · <b>$100</b> / год</div>
+      </div>
+      <div class="svc" data-reveal>
+        <div class="sn">② WisprFlow</div>
+        <div class="splat">Windows · Mac · Android · iOS</div>
+        <p>Один из самых известных на рынке. Бесплатная версия ограничена.</p>
+        <div class="sprice">от <b>$12</b> / мес</div>
+      </div>
+      <div class="svc" data-reveal>
+        <div class="sn">③ Handy</div>
+        <div class="splat">Windows и др. · open-source</div>
+        <p>Бесплатный, модель распознавания на выбор (GigaAM от Сбера).</p>
+        <div class="sprice"><b>бесплатно</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">11</span><span>говорильня</span></div>
+</section>
+
+<!-- МАРШРУТ (route2) -->
+<section class="screen routescreen" id="route2">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-10%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Маршрут дня</span>
+      <h1 class="big">Наш план <span style="color:var(--orange)">на сегодня</span></h1>
+    </div>
+    <div class="stepper">
+      <div class="rstep"><div class="rn">1</div><h3>Знакомство<br>с нейросетями</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep active"><div class="rn">2</div><h3>Промпты<br>и скиллы</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">3</div><h3>Создание<br>AI-помощников</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">4</div><h3>Визуал</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">★</div><h3>Финал Q&amp;A</h3><div class="now">Мы здесь</div></div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">12</span><span>маршрут дня</span></div>
+</section>
+
+<!-- ===================== ЧАТ vs АГЕНТ ===================== -->
+<section class="screen" id="s4b">
+  <div class="glow" style="width:1000px;height:1000px;right:-6%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="grid">
+      <div class="cva-text">
+        <span class="eyebrow" data-reveal>Забудьте про нейро-чаты</span>
+        <h1 class="big" data-reveal>Чат или <span class="o pulse">агент</span>?</h1>
+        <p class="cva-line" id="cvaLine">Чат — это <b>супермозг</b><br>Гениальный, но <b>без рук</b></p>
+      </div>
+      <div class="cva-fig" id="cvaFig">
+        <img class="brain chat" src="assets/brain-chat-cut.png" alt="Супермозг">
+        <img class="brain agent" src="assets/brain-agent-cut.png" alt="Супермозг с руками">
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">13</span><span>чат или агент</span></div>
+</section>
+
+<!-- ГДЕ ВЗЯТЬ CLAUDE CODE (HTML) -->
+<section class="screen" id="getcc" data-reveal-step="90">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-12%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Где взять Claude Code</span>
+      <h1 class="big">Три способа<br>пользоваться <span class="o">Claude&nbsp;Code</span></h1>
+    </div>
+    <div class="ccways">
+      <div class="ccway" data-reveal>
+        <div class="cchead"><div class="n">1</div><h3>Приложение</h3><div class="ctag">самый лёгкий вход</div></div>
+        <ul><li>Скачал, залогинился —&nbsp;готово</li><li>Внутри: Claude&nbsp;Code, Claude чат, Claude&nbsp;Cowork</li><li>Минус: урезанный интерфейс</li></ul>
+      </div>
+      <div class="ccway" data-reveal>
+        <div class="cchead"><div class="n">2</div><h3>Терминал</h3><div class="ctag">когда нужен сервер</div></div>
+        <ul><li>Одна команда с&nbsp;офсайта</li><li>Окно для разговора с&nbsp;Клодом</li><li>Новичку —&nbsp;сложновато, но освоить надо</li></ul>
+      </div>
+      <div class="ccway" data-reveal>
+        <div class="cchead"><div class="n">3</div><h3>VS Code</h3><div class="ctag">мой основной · 90%</div></div>
+        <ul><li>Все файлы проекта на&nbsp;виду</li><li>Плюс куча прикольных плагинов</li><li>Удобно для работы со&nbsp;100500 сессиями</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">14</span><span>где взять claude code</span></div>
+</section>
+
+<!-- ===================== PROMPT vs SKILL ===================== -->
+<section class="screen" id="s5" data-state="prompt">
+  <div class="glow" style="width:1000px;height:1000px;right:-6%;bottom:-20%"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">В чём разница</span>
+      <h1 class="big">Промпт или <span style="color:var(--orange)">скилл</span>?</h1>
+    </div>
+    <div class="toggle" data-reveal>
+      <button id="bp" class="act p" onclick="setVS('prompt')">Промпт</button>
+      <button id="bs" onclick="setVS('skill')">Скилл</button>
+    </div>
+    <div class="def p" id="vsdef"><span class="tag">Промпт —</span>разовая инструкция, узконацеленная на решение одной задачи</div>
+    <table>
+      <tr><td class="lbl">Память</td><td class="cp"><span class="ic">—</span>Контекст перегружен ненужной информацией</td><td class="cs"><span class="ic">✓</span>Подгружается только то, что нужно в моменте</td></tr>
+      <tr><td class="lbl">Универсальность</td><td class="cp"><span class="ic">—</span>Строго под одну задачу</td><td class="cs"><span class="ic">✓</span>Легко перестраивается</td></tr>
+      <tr><td class="lbl">Возможности</td><td class="cp"><span class="ic">—</span>Ограничен чатом</td><td class="cs"><span class="ic">✓</span>Дружит с сервисами и скриптами</td></tr>
+      <tr><td class="lbl">Автоматизация</td><td class="cp"><span class="ic">—</span>Копировать / вставить</td><td class="cs"><span class="ic">✓</span>Полноценный ассистент с субагентами</td></tr>
+    </table>
+  </div>
+  <div class="slidemark"><span class="num">15</span><span>скилл vs промпт</span></div>
+</section>
+
+<!-- ===================== UNDER THE HOOD ===================== -->
+<section class="screen" id="s6" data-reveal-step="150">
+  <div class="glow" style="width:900px;height:900px;left:-10%;top:30%"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Под капотом</span>
+      <h1 class="big">Прохор — это <span class="o">22 файла</span>,<br>а не один промпт</h1>
+      <p class="sub">Claude грузит только диспетчер <b>~100 токенов</b>. Остальное подтягивает по запросу — поэтому не захлёбывается на масштабе.</p>
+    </div>
+    <div class="ide" data-reveal>
+      <div class="tree" id="tree"></div>
+      <div class="detail">
+        <div class="fname" id="dname">SKILL.md</div>
+        <div class="ftype" id="dtype">Диспетчер</div>
+        <div class="fdesc" id="ddesc">Точка входа. Маршрутизирует: какой файл прочитать под текущую задачу. Грузится первым, держит общую логику.</div>
+        <div class="counter">
+          <div class="c">9<span>references</span></div>
+          <div class="c">8<span>library</span></div>
+          <div class="c">22<span>всего файлов</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">16</span><span>под капотом</span></div>
+</section>
+
+<!-- ===================== 3 ПУТИ (клик-прорастание) ===================== -->
+<section class="screen" id="s7">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-14%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Как создавать</span>
+      <h1 class="big">Как рождается скилл<br><span class="o">3 пути</span></h1>
+    </div>
+    <div class="ways">
+      <div class="way" onclick="this.classList.toggle('open')"><div class="n">1</div><h3>Базовый</h3><div class="tag">с нуля</div><ul><li>Создаёшь скилл на холодную</li><li>Работаешь с агентом вживую</li><li>«Туда не лезь, делай вот так»</li></ul></div>
+      <div class="way" onclick="this.classList.toggle('open')"><div class="n">2</div><h3>Опытный</h3><div class="tag">из сессии</div><ul><li>Решаешь конкретную задачу</li><li>Допиливаешь до идеала</li><li>Skill Creator делает скилл</li></ul></div>
+      <div class="way" onclick="this.classList.toggle('open')"><div class="n">3</div><h3>Исследовательский</h3><div class="tag">сначала research</div><ul><li>Нейросеть собирает знания</li><li>На этой базе строишь скилл</li><li>Дорабатываешь до состояния</li></ul></div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">17</span><span>как создавать</span></div>
+</section>
+
+<!-- МАРШРУТ (route3) -->
+<section class="screen routescreen" id="route3">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-10%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Маршрут дня</span>
+      <h1 class="big">Наш план <span style="color:var(--orange)">на сегодня</span></h1>
+    </div>
+    <div class="stepper">
+      <div class="rstep"><div class="rn">1</div><h3>Знакомство<br>с нейросетями</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">2</div><h3>Промпты<br>и скиллы</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep active"><div class="rn">3</div><h3>Создание<br>AI-помощников</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">4</div><h3>Визуал</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">★</div><h3>Финал Q&amp;A</h3><div class="now">Мы здесь</div></div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">18</span><span>маршрут дня</span></div>
+</section>
+
+<!-- ===================== БЛОК 3 · КРЕАТИВ-СКИЛЛЫ (День 2) ===================== -->
+
+<!-- 19 · Литературный ассистент — схема системы -->
+<section class="screen flowscreen" id="sk-lit" data-reveal-step="55">
+  <div class="glow" style="width:1000px;height:1000px;left:-8%;top:42%"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Разбор живых кейсов · 1 / 4</span>
+      <h1 class="big">Литературный ассистент<span class="sk-role">эссе и травелоги моим голосом</span></h1>
+    </div>
+    <div class="flow">
+      <div class="phase" data-reveal>
+        <span class="ph-l">Подготовка</span>
+        <div class="steps">
+          <div class="step"><span class="sn">1</span><div class="st-b"><b>Погружение в архив</b><i>ловит ритм и голос автора</i></div></div>
+          <div class="step"><span class="sn">2</span><div class="st-b"><b>Бриф</b><i>идея · сюжет · факты · конфликт</i></div></div>
+        </div>
+      </div>
+      <div class="fl-arrow" data-reveal>→</div>
+      <div class="phase" data-reveal>
+        <span class="ph-l">Проектирование</span>
+        <div class="steps">
+          <div class="step"><span class="sn">3</span><div class="st-b"><b>Концепт-карта</b><i>угол, аудитория, тезис</i></div></div>
+          <div class="step"><span class="sn">4</span><div class="st-b"><b>Каркас</b><i>интрига → вердикт в финале</i></div></div>
+        </div>
+      </div>
+      <div class="fl-arrow" data-reveal>→</div>
+      <div class="phase" data-reveal>
+        <span class="ph-l">Производство</span>
+        <div class="steps">
+          <div class="step"><span class="sn">5</span><div class="st-b"><b>Письмо</b><i>пишет вместе со мной</i></div></div>
+          <div class="step"><span class="sn">6</span><div class="st-b"><b>Deep Polish</b><i>вода вон, штампы вон</i></div></div>
+          <div class="step"><span class="sn">7</span><div class="st-b"><b>Контроль</b><i>сверка редакторами</i></div></div>
+          <div class="step"><span class="sn">8</span><div class="st-b"><b>Закреп</b><i>вопрос для вовлечения</i></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-foot" data-reveal>
+      <span class="flow-out">Результат — заметка, которая цепляет глубиной и звучит как живой автор</span>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">19</span><span>литературный ассистент</span></div>
+</section>
+
+<!-- 20 · Постовик + аудитор — схема системы -->
+<section class="screen auditscreen" id="sk-post" data-reveal-step="55">
+  <div class="glow" style="width:1000px;height:1000px;right:-8%;top:45%"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Разбор живых кейсов · 2 / 4</span>
+      <h1 class="big">Постовик + аудитор<span class="sk-role">пост в канал моим голосом, с проверкой</span></h1>
+    </div>
+    <div class="audit">
+      <div class="au-flow">
+        <div class="au-node" data-reveal><span class="au-cap">Вход</span><b>Сырьё</b><i>статья · транскрипт · заметки</i></div>
+        <div class="fl-arrow" data-reveal>→</div>
+        <div class="au-node au-hot" data-reveal><span class="au-cap au-on">① Постовик</span><b>Пишет пост моим голосом</b><i>ER-валидация</i></div>
+        <div class="fl-arrow" data-reveal>→</div>
+        <div class="au-node au-hot" data-reveal><span class="au-cap au-on">② Аудитор</span><b>Проверяет<br>5 критиками</b><i>веер ниже ↓</i></div>
+        <div class="fl-arrow" data-reveal>→</div>
+        <div class="au-node" data-reveal><span class="au-cap">Выход</span><b>Отчёт автору</b><i>финальное слово за мной</i></div>
+      </div>
+      <div class="crits" data-reveal>
+        <div class="crit"><b>Голос</b><i>звучит как живая речь</i></div>
+        <div class="crit"><b>Эксперт</b><i>держит уровень</i></div>
+        <div class="crit"><b>ER</b><i>двигает метрику</i></div>
+        <div class="crit"><b>Факты</b><i>подтверждено источником</i></div>
+        <div class="crit"><b>AI-следы</b><i>не палится как нейронка</i></div>
+      </div>
+    </div>
+    <div class="flow-foot" data-reveal>
+      <span class="flow-out">Результат — пост, который хочется сохранить и переслать: без AI-штампов, с проверенными фактами</span>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">20</span><span>постовик + аудитор</span></div>
+</section>
+
+<!-- 21 · Анализ канала — живое демо -->
+<section class="screen chanscreen" id="sk-chan" data-reveal-step="60">
+  <div class="glow" style="width:1000px;height:1000px;left:-8%;top:48%"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Разбор живых кейсов · 3 / 4</span>
+      <h1 class="big">Разбираем <span style="color:var(--orange)">чужой канал</span><span class="sk-role">что у них работает</span></h1>
+      <span class="sk-tag" data-reveal>Анализ контента · Telegram · живое демо</span>
+    </div>
+    <div class="chan">
+      <div class="chan-feed" data-reveal>
+        <div class="chan-bar"><span class="chan-av"></span>@любой_канал · лента</div>
+        <div class="post"><p>Пост-разбор кейса</p><span class="pm">❤ 412 · 💬 38 · 👁 9,1k</span></div>
+        <div class="post"><p>Личная история с выводом</p><span class="pm">❤ 980 · 💬 71 · 👁 14k</span></div>
+        <div class="post"><p>Подборка инструментов</p><span class="pm">❤ 220 · 💬 12 · 👁 6,4k</span></div>
+        <div class="post"><p>Короткая новость дня</p><span class="pm">❤ 75 · 💬 3 · 👁 3,1k</span></div>
+      </div>
+      <div class="fl-arrow" data-reveal>→</div>
+      <div class="chan-ins" data-reveal>
+        <span class="au-cap au-on">Что вытащили</span>
+        <ul class="sk-do">
+          <li>Какие <b>темы и форматы</b> заходят</li>
+          <li>Ритм публикаций и длина постов</li>
+          <li>Триггеры реакций, комментов и репостов</li>
+          <li>Идеи, что <b>забрать к себе</b></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">21</span><span>анализ канала</span></div>
+</section>
+
+<!-- 22 · Кеша -->
+<section class="screen skillscreen" id="sk-kesha" data-reveal-step="70">
+  <div class="glow" style="width:1000px;height:1000px;right:-6%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="sk-grid">
+      <div class="sk-fig" data-reveal>
+        <div class="sk-portrait"><img src="assets/skill-kesha.png" alt="Кеша — AI-креативный директор"></div>
+      </div>
+      <div class="sk-body">
+        <span class="eyebrow" data-reveal>Разбор живых кейсов · 4 / 4</span>
+        <h1 class="big" data-reveal>Кеша<span class="sk-role">AI-креативный директор</span></h1>
+        <span class="sk-tag" data-reveal>Реклама и креатив</span>
+        <ul class="sk-do" data-reveal>
+          <li>Анализ ЦА → концепции → тексты объявлений<br>с антимодерационной проверкой</li>
+          <li>Визуальные промпты и генерация картинок</li>
+          <li>Спорит и аргументирует как живой креативный директор</li>
+        </ul>
+        <div class="sk-out" data-reveal><span class="sk-out-l">Результат</span>Готовые креативы — <b>тексты и визуалы</b>,<br>экспорт в Excel / Google Sheets</div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">22</span><span>кеша</span></div>
+</section>
+
+<!-- МАРШРУТ (route4) · Блок 4 -->
+<section class="screen routescreen" id="route4">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-10%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head" data-reveal>
+      <span class="eyebrow">Маршрут дня</span>
+      <h1 class="big">Наш план <span style="color:var(--orange)">на сегодня</span></h1>
+    </div>
+    <div class="stepper">
+      <div class="rstep"><div class="rn">1</div><h3>Знакомство<br>с нейросетями</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">2</div><h3>Промпты<br>и скиллы</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">3</div><h3>Создание<br>AI-помощников</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep active"><div class="rn">4</div><h3>Визуал</h3><div class="now">Мы здесь</div></div>
+      <div class="rarrow">→</div>
+      <div class="rstep"><div class="rn">★</div><h3>Финал Q&amp;A</h3><div class="now">Мы здесь</div></div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">23</span><span>маршрут дня</span></div>
+</section>
+
+<!-- 24 · Рисовальщик -->
+<section class="screen skillscreen" id="sk-risoval" data-reveal-step="70">
+  <div class="glow" style="width:1000px;height:1000px;right:-6%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="sk-grid">
+      <div class="sk-fig" data-reveal>
+        <div class="sk-portrait"><img src="assets/skill-risoval.png" alt="Рисовальщик — генерация изображений"></div>
+      </div>
+      <div class="sk-body">
+        <span class="eyebrow" data-reveal>Визуал · 1 / 2</span>
+        <h1 class="big" data-reveal>Рисовальщик<span class="sk-role">картинки на двух движках</span></h1>
+        <span class="sk-tag" data-reveal>Генерация изображений</span>
+        <ul class="sk-do" data-reveal>
+          <li>Два лучших движка: <b>Nano Banana 2</b> и <b>GPT Image 2</b></li>
+          <li>Сам спрашивает, через что рисовать</li>
+          <li>Режим серии — кадры <b>в одном стиле</b><br>(рецепты, инструкции, раскадровки)</li>
+        </ul>
+        <div class="sk-out" data-reveal><span class="sk-out-l">Результат</span>Картинка или серия <b>под пост, сторис, обложку</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">24</span><span>рисовальщик</span></div>
+</section>
+
+<!-- 25 · Claude Design -->
+<section class="screen cdscreen" id="sk-cdesign" data-reveal-step="70">
+  <div class="glow" style="width:1000px;height:1000px;left:-6%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="cd-grid">
+      <div class="cd-body">
+        <span class="eyebrow" data-reveal>Визуал · 2 / 2</span>
+        <h1 class="big" data-reveal>Claude Design<span class="sk-role">сайт силами одной нейронки</span></h1>
+        <span class="sk-tag" data-reveal>Лендинги · веб</span>
+        <p class="cd-lead" data-reveal>Собираю посадочные прямо в Claude — без верстальщика и дизайнера.</p>
+        <div class="sk-out" data-reveal><span class="sk-out-l">Пример вживую</span>Лендинг конференции <b>«За пределами клика»</b> — Медиасфера, 4 июня</div>
+      </div>
+      <a class="browser" href="https://conf4june.media-sfera.com/" target="_blank" rel="noopener" data-reveal>
+        <div class="br-bar"><span class="br-dot"></span><span class="br-dot"></span><span class="br-dot"></span><span class="br-url">conf4june.media-sfera.com</span></div>
+        <img class="br-shot" src="assets/conf4june-shot.png" alt="Лендинг «За пределами клика», собранный в Claude Design">
+        <span class="br-open">↗ открыть вживую</span>
+      </a>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">25</span><span>claude design</span></div>
+</section>
+
+<!-- 24 · Сборка в зале -->
+<section class="screen" id="assemble" data-reveal-step="120">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-14%;transform:translateX(-50%)"></div>
+  <div class="inner" style="text-align:center">
+    <span class="eyebrow" data-reveal>Время собирать</span>
+    <h1 class="big" data-reveal>Каких ассистентов хотите <span style="color:var(--orange)">вы</span>?<br>Сделаем <span style="color:var(--orange)">прямо сейчас!</span></h1>
+  </div>
+  <div class="slidemark"><span class="num">26</span><span>сборка в зале</span></div>
+</section>
+
+<!-- 25 · FAQ -->
+<section class="screen" id="faq" data-reveal-step="120">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-14%;transform:translateX(-50%)"></div>
+  <div class="inner" style="text-align:center">
+    <span class="eyebrow" data-reveal>Открытый микрофон</span>
+    <h1 class="big" data-reveal>Вопросы и ответы<span style="display:block;margin-top:.32em;color:var(--orange)">FAQ</span></h1>
+  </div>
+  <div class="slidemark"><span class="num">27</span><span>вопросы и ответы</span></div>
+</section>
+
+<!-- ===================== 13 · CTA ===================== -->
+<section class="screen" id="s8">
+  <div class="glow" style="width:1000px;height:1000px;right:2%;top:50%;transform:translateY(-50%)"></div>
+  <div class="fx-confetti" data-lottie-key="confetti" aria-hidden="true"></div>
+  <div class="inner">
+    <div class="grid">
+      <div class="figwrap" data-reveal><img class="figure" src="assets/timur-speaker-cut.png" alt="Тимур Угулава"></div>
+      <div>
+        <span class="eyebrow" data-reveal>Тимур Угулава</span>
+        <h1 class="big" style="margin-top:22px" data-reveal>Актуалочка про <span class="o pulse">AI</span></h1>
+        <div class="qrwrap" data-reveal>
+          <div class="qr"><img src="assets/qr.png" alt="QR"></div>
+          <div class="cta-sub">Заходите в мой канал <span class="o">«Тимур Угулава»</span><br>и собирайте свою армию спецов</div>
+        </div>
+        <a class="tg-btn" href="https://t.me/+z7t-uQJfP-U4MDYy" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.31l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          <span>Открыть в Telegram</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">28</span><span>финал</span></div>
+</section>
+
+<!-- ===================== 29 · ВСЕ СКИЛЛЫ НА GITHUB ===================== -->
+<section class="screen" id="skills-all" data-reveal-step="80">
+  <div class="glow" style="width:1000px;height:1000px;right:-8%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <span class="eyebrow" data-reveal>Открытый код</span>
+    <h1 class="big" data-reveal>Забирайте мои скиллы <span class="o">себе</span></h1>
+    <div class="sa-wrap">
+      <div class="sa-list" data-reveal>
+        <div class="sa-item"><div class="nm">Прохор</div><div class="rl">AI-маркетолог девелопера</div></div>
+        <div class="sa-item"><div class="nm">Кеша</div><div class="rl">AI-креативный директор</div></div>
+        <div class="sa-item"><div class="nm">Рисовальщик</div><div class="rl">генератор изображений</div></div>
+        <div class="sa-item"><div class="nm">Telegram</div><div class="rl">курьер с согласованием</div></div>
+        <div class="sa-item"><div class="nm">Мем-мейкер</div><div class="rl">мемы через Nano Banana</div></div>
+        <div class="sa-item"><div class="nm">Wordstat</div><div class="rl">сбор частотности запросов</div></div>
+        <div class="sa-item"><div class="nm">Архитектор</div><div class="rl">проектирует и собирает скиллы</div></div>
+        <div class="sa-item"><div class="nm">Калибровщик</div><div class="rl">петля улучшения промптов</div></div>
+      </div>
+      <div class="sa-qr" data-reveal>
+        <div class="qr"><img src="assets/qr-github.png" alt="QR — GitHub claude-skills"></div>
+        <div class="cap">Сканируй — забирай <b>все скиллы</b></div>
+        <div class="url">github.com/TimurUgulava/claude-skills</div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">29</span><span>забирай на github</span></div>
+</section>
+
+<script>
+/* ---------- carousel s4 ---------- */
+var ci=0;
+var csteps=[].slice.call(document.querySelectorAll('#s4 .cstep'));
+var cdots=document.getElementById('cdots');
+csteps.forEach(function(s,i){
+  var d=document.createElement('i');d.onclick=function(){ci=i;renderCar()};cdots.appendChild(d);
+  s.addEventListener('click',function(){ci=i;renderCar()});
+});
+var cdotEls=[].slice.call(cdots.children);
+/* шаг = реальная ширина активной карточки + зазор (адаптивно подхватывает vw-ширину) */
+function carShift(){var w=csteps[0]?csteps[0].offsetWidth:442;var g=window.innerWidth<=960?16:32;return w+g;}
+function renderCar(){
+  var shift=carShift();
+  csteps.forEach(function(s,i){
+    var off=i-ci,a=Math.abs(off);
+    var sc=a===0?1:(a===1?0.8:0.7);
+    var op=a===0?1:(a===1?0.5:0);
+    s.style.transform='translate(-50%,-50%) translateX('+(off*shift)+'px) scale('+sc+')';
+    s.style.opacity=op;s.style.zIndex=10-a;s.style.pointerEvents=a>2?'none':'auto';
+    s.classList.toggle('active',off===0);
+    if(cdotEls[i])cdotEls[i].classList.toggle('on',off===0);
+  });
+  if(window.__onActiveStep) window.__onActiveStep(ci);
+}
+function cmove(d){ci=Math.max(0,Math.min(csteps.length-1,ci+d));renderCar()}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'){e.preventDefault();cmove(1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();cmove(-1)}
+});
+window.addEventListener('resize',renderCar);
+/* тач-свайп по карусели (для телефона/планшета) */
+(function(){var car=document.getElementById('carousel'),x0=null;
+  car.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  car.addEventListener('touchend',function(e){
+    if(x0==null)return;var dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>40)cmove(dx<0?1:-1);x0=null;
+  },{passive:true});
+})();
+renderCar();
+
+/* ---------- dots nav + keyboard ---------- */
+var allScreens=[].slice.call(document.querySelectorAll('.screen'));
+var screens=allScreens.filter(function(s){return getComputedStyle(s).display!=='none'});
+var dots=document.getElementById('dots');
+screens.forEach(function(s,i){var a=document.createElement('a');a.href='#'+s.id;dots.appendChild(a)});
+var dotEls=[].slice.call(dots.children);
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
+  var i=screens.indexOf(e.target);dotEls.forEach(function(d,j){d.classList.toggle('on',j===i)});
+}})},{threshold:.5});
+screens.forEach(function(s){io.observe(s)});
+function cur(){var best=0,bd=1e9;for(var i=0;i<screens.length;i++){var d=Math.abs(screens[i].offsetTop-window.scrollY);if(d<bd){bd=d;best=i}}return best}
+function go(n){n=Math.max(0,Math.min(screens.length-1,n));window.scrollTo({top:screens[n].offsetTop,behavior:'smooth'})}
+var navLock=false;
+document.addEventListener('keydown',function(e){
+  if(['ArrowDown','PageDown',' '].indexOf(e.key)>=0){e.preventDefault();if(navLock)return;navLock=true;go(cur()+1);setTimeout(function(){navLock=false},520)}
+  if(['ArrowUp','PageUp'].indexOf(e.key)>=0){e.preventDefault();if(navLock)return;navLock=true;go(cur()-1);setTimeout(function(){navLock=false},520)}
+});
+
+/* ---------- видео-Прохор s3 (рамка): старт по наведению/тапу + тумблер звука ---------- */
+(function(){
+  var v=document.getElementById('proVid'), sBtn=document.getElementById('vSound'),
+      pBtn=document.getElementById('vPlay'), frame=document.querySelector('.vframe');
+  if(!v||!frame) return;
+  var ICON_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>';
+  var ICON_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>';
+  if(sBtn) sBtn.innerHTML=ICON_OFF;
+  function syncSnd(){ if(sBtn){ sBtn.innerHTML=v.muted?ICON_OFF:ICON_ON; sBtn.title=v.muted?'Включить звук':'Выключить звук'; } }
+  /* старт — сразу со звуком; если браузер заблокирует (нет ещё жеста) — фолбэк без звука */
+  function playV(){ v.muted=false; var pr=v.play();
+    if(pr&&pr.catch){ pr.catch(function(){ v.muted=true; v.play().catch(function(){}); syncSnd(); }); }
+    syncSnd(); }
+  function pauseV(){ v.pause(); }
+  v.addEventListener('play',function(){ frame.classList.add('playing'); });
+  v.addEventListener('pause',function(){ frame.classList.remove('playing'); });
+  v.addEventListener('volumechange',syncSnd);
+  if(sBtn) sBtn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation();
+    v.muted=!v.muted; syncSnd(); if(!v.muted&&v.paused){ v.play().catch(function(){}); } });
+  if(pBtn) pBtn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); playV(); });
+  /* десктоп — наведение мышью; тач — тап по рамке */
+  if(window.matchMedia('(hover:hover)').matches){
+    frame.addEventListener('mouseenter',playV);
+    frame.addEventListener('mouseleave',pauseV);
+  } else {
+    frame.addEventListener('click',function(){ v.paused?playV():pauseV(); });
+  }
+  /* ушли с экрана — пауза */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){es.forEach(function(e){ if(!e.isIntersecting)pauseV(); })},{threshold:.3}).observe(frame);
+  }
+  /* рамка переезжает: десктоп — рядом с текстом (s3), мобайл — отдельный экран (s3v) */
+  var slotD=document.getElementById('figSlot'), slotM=document.getElementById('figSlotM');
+  if(slotD&&slotM){
+    var mqv=window.matchMedia('(max-width:960px)');
+    var place=function(){ (mqv.matches?slotM:slotD).appendChild(frame); };
+    place();
+    if(mqv.addEventListener) mqv.addEventListener('change',place); else mqv.addListener(place);
+  }
+})();
+
+
+/* ---------- s5 toggle + s6 file tree (восстановлено для Блока 2) ---------- */
+function setVS(state){
+  var s=document.getElementById('s5');
+  s.dataset.state=state;
+  var def=document.getElementById('vsdef');
+  document.getElementById('bp').classList.toggle('act',state==='prompt');
+  document.getElementById('bp').classList.toggle('p',state==='prompt');
+  document.getElementById('bs').classList.toggle('act',state==='skill');
+  if(state==='prompt'){def.className='def p';def.innerHTML='<span class="tag">Промпт —</span>разовая инструкция, узконацеленная на решение одной задачи';}
+  else{def.className='def s';def.innerHTML='<span class="tag">Скилл —</span>адаптивный сотрудник-профессионал с постоянным ростом компетенций';}
+}
+
+/* ---------- file tree 06 ---------- */
+var TREE=[
+  {f:'SKILL.md',t:'Диспетчер',d:'Точка входа. Маршрутизирует: какой файл прочитать под текущую задачу. Грузится первым, держит общую логику.'},
+  {dir:'references/ — поведение и процедуры',kids:[
+    {f:'character-voice.md',t:'references',d:'Психология и тон Прохора: как спорит, профжаргон, режим «Челлендж».'},
+    {f:'communication-style.md',t:'references',d:'Дисциплина диалога и словарь токенов доверия — без них ни одно число не выходит наружу.'},
+    {f:'pipeline.md',t:'references',d:'Полные процедуры 4 этапов: аудитория, концепция, тексты, визуалы. Расчёт темпа продаж.'},
+    {f:'modes.md',t:'references',d:'Режимы входа: бриф, ссылка на объект, название+адрес, демо.'},
+    {f:'moderation-rules.md',t:'references',d:'Антимодерация площадок + юрфильтр 214-ФЗ. «Красное → зелёное» без потери драйва.'},
+    {f:'image-generation.md',t:'references',d:'Роутинг моделей: Nano Banana vs GPT Image 2 — что чем рисовать.'},
+    {f:'research-actualization.md',t:'references',d:'Шаблоны живого WebSearch: свежие бенчмарки, кейсы, тренды со ссылками.'},
+    {f:'output-templates.md',t:'references',d:'Шаблоны вывода каждого этапа и финальной аудит-стены.'},
+    {f:'demo-mode.md',t:'references',d:'Сценический режим: партитура, двойной буфер, дуэль моделей, Q&A.'},
+  ]},
+  {dir:'library/ — данные рынка',kids:[
+    {f:'audiences.yaml',t:'library',d:'Сегменты ЦА × тип объекта: триггеры, барьеры, JTBD.'},
+    {f:'benchmarks.yaml',t:'library',d:'Бенчмарки CPL/CPC/CPM со ссылками и датой актуализации.'},
+    {f:'funnels.yaml',t:'library',d:'Воронки первички с лагами эскроу/ДДУ по типам объектов.'},
+    {f:'channels/performance.yaml',t:'library',d:'Каналы перформанса: Яндекс Директ, VK Ads, MyTarget.'},
+    {f:'channels/social.yaml',t:'library',d:'Соцсети и мессенджеры: VK SMM, Telegram, Дзен.'},
+    {f:'channels/classified.yaml',t:'library',d:'Классифайды: Авито, Циан, Домклик, Яндекс Недвижимость.'},
+    {f:'channels/brand-offline.yaml',t:'library',d:'Brand и офлайн: DOOH, наружка, ТВ, радио, инфлюенс.'},
+    {f:'channels/commercial-b2b-hospitality.yaml',t:'library',d:'B2B-каналы для БЦ, складов, гостиниц (ранний контур).'},
+  ]},
+  {dir:'prompts/ — шаблоны визуалов',kids:[
+    {f:'creative-prompts.md',t:'prompts',d:'Промпт-шаблоны генерации визуалов под недвижимость, включая кириллический постер.'},
+  ]},
+  {dir:'scripts/ — автоматизация',kids:[
+    {f:'export_docx.py',t:'scripts',d:'Рендер MD-артефактов в фирменный .docx: оранжевый #FE9901, зебра, вставка картинок.'},
+  ]},
+  {dir:'examples/ — готовые кейсы',kids:[
+    {f:'case-zhk-comfort.md',t:'examples',d:'Полный сквозной кейс ЖК комфорт-класса.'},
+    {f:'demo-session-b15/SCENARIO.md',t:'examples',d:'Готовый боевой демо-сценарий реального ЖК «Б15».'},
+  ]},
+];
+function showDetail(o){
+  document.getElementById('dname').textContent=o.f;
+  document.getElementById('dtype').textContent=o.t;
+  document.getElementById('ddesc').textContent=o.d;
+  document.querySelectorAll('#tree .node.file').forEach(function(n){n.classList.remove('sel')});
+}
+(function buildTree(){
+  var tree=document.getElementById('tree');
+  TREE.forEach(function(item){
+    if(item.f){
+      var n=document.createElement('div');n.className='node file';n.innerHTML='<span class="ico">📄</span>'+item.f;
+      n.onclick=function(){showDetail(item);n.classList.add('sel')};tree.appendChild(n);
+    }else{
+      var d=document.createElement('div');d.className='node dir';d.innerHTML='<span class="ico">▸</span>'+item.dir;
+      var kids=document.createElement('div');kids.className='kids closed';
+      d.onclick=function(){kids.classList.toggle('closed');d.querySelector('.ico').textContent=kids.classList.contains('closed')?'▸':'▾'};
+      d.querySelector('.ico').textContent='▸';
+      item.kids.forEach(function(k){
+        var fn=document.createElement('div');fn.className='node file';fn.innerHTML='<span class="ico">📄</span>'+k.f;
+        fn.onclick=function(){showDetail(k);fn.classList.add('sel')};kids.appendChild(fn);
+      });
+      tree.appendChild(d);tree.appendChild(kids);
+    }
+  });
+})();
+
+/* ---------- s4b: «дать руки» — мозг отращивает руки (восстановлено) ---------- */
+(function(){
+  var fig=document.getElementById('cvaFig'), sec=document.getElementById('s4b'), line=document.getElementById('cvaLine');
+  if(!fig||!sec||!line) return;
+  var L_CHAT='Чат — это <b>супермозг</b><br>Гениальный, но <b>без рук</b>';
+  var L_AGENT='Агент — тот же мозг, но <b>с руками</b><br>Файлы, сервисы, действия';
+  var on=false;
+  fig.addEventListener('click',function(){
+    on=!on; sec.classList.toggle('revealed',on);
+    line.style.opacity='0';
+    setTimeout(function(){ line.innerHTML=on?L_AGENT:L_CHAT; line.style.opacity='1'; },180);
+  });
+})();
+
+/* ---------- reveal на скролле + прогресс маршрута (Emil Kowalski craft) ---------- */
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; /* reduced-motion: контент сразу, без движения */
+
+  /* общий reveal: stagger внутри экрана через --rd, въезд один раз */
+  var revs=[].slice.call(document.querySelectorAll('[data-reveal]'));
+  revs.forEach(function(el){
+    var sec=el.closest('.screen'); if(!sec) return;
+    if(sec.__rev===undefined) sec.__rev=0;
+    var step=parseInt(sec.getAttribute('data-reveal-step')||'70',10);
+    el.style.setProperty('--rd',(sec.__rev*step)+'ms');
+    sec.__rev++;
+  });
+  var ioR=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){ e.target.classList.add('in'); ioR.unobserve(e.target); }
+  })},{threshold:.18,rootMargin:'0px 0px -6% 0px'});
+  revs.forEach(function(el){ ioR.observe(el); });
+
+  /* маршрут: каскад слева-направо, «пройденные» стрелки оранжевые, посадка активного шага */
+  function runRoute(sec){
+    var stepper=sec.querySelector('.stepper'); if(!stepper) return;
+    var kids=[].slice.call(stepper.children), activeIdx=-1;
+    kids.forEach(function(n,i){ if(n.classList.contains('rstep')&&n.classList.contains('active')) activeIdx=i; });
+    var step=95;
+    kids.forEach(function(n,i){
+      n.style.animationDelay=(i*step)+'ms';
+      if(n.classList.contains('rarrow') && i<activeIdx){ n.style.transitionDelay=(i*step)+'ms'; n.classList.add('rpassed'); }
+      n.classList.add('rin');
+    });
+    if(kids[activeIdx]) setTimeout(function(){ kids[activeIdx].classList.add('rland'); }, activeIdx*step+260);
+  }
+  var ioRoute=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){ runRoute(e.target); ioRoute.unobserve(e.target); }
+  })},{threshold:.35});
+  [].slice.call(document.querySelectorAll('.routescreen')).forEach(function(r){ ioRoute.observe(r); });
+})();
+
+</script>
+
+<!-- ===================== LOTTIE (меловые приколы) ===================== -->
+<script src="assets/lottie/lottie.min.js"></script>
+<script src="assets/lottie/fx-confetti.js?v=2"></script>
+<script src="assets/lottie/fx-doodles.js?v=2"></script>
+<script src="assets/lottie/fx-sparks.js?v=2"></script>
+<script src="assets/lottie/fx-step-icons.js?v=2"></script>
+<script src="assets/lottie/fx-check.js?v=2"></script>
+<script>
+(function(){
+  var L=window.lottie, D=window.lottieData||{};
+  if(!L) return;
+  var nodes=[].slice.call(document.querySelectorAll('[data-lottie-key]'));
+  nodes.forEach(function(el){
+    var data=D[el.dataset.lottieKey]; if(!data) return;
+    var loop=el.dataset.lottieLoop==='1', once=el.dataset.lottieOnce==='1';
+    el._anim=L.loadAnimation({
+      container:el, renderer:'svg', loop:loop, autoplay:false,
+      animationData:data,
+      rendererSettings:{preserveAspectRatio: el.dataset.lottieFit||'xMidYMid meet'}
+    });
+    if(loop||once) el._anim.play();   /* once: рисуется один раз при загрузке и держится на последнем кадре */
+  });
+  /* одноразовые (не loop, не manual) — играют при появлении экрана; галочки — по очереди (stagger) */
+  var checks=[].slice.call(document.querySelectorAll('.lottie-check'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      var el=e.target; if(!(e.isIntersecting && el._anim)) return;
+      var ci=checks.indexOf(el);
+      var d= ci>=0 ? ci*110 : parseInt(el.dataset.lottieDelay||'0',10);
+      if(d>0) setTimeout(function(){el._anim.goToAndPlay(0,true)},d); else el._anim.goToAndPlay(0,true);
+    })},{threshold:.3});
+    nodes.forEach(function(el){ if(el._anim && el.dataset.lottieLoop!=='1' && el.dataset.lottieManual!=='1' && el.dataset.lottieOnce!=='1') io.observe(el); });
+  }
+  /* иконки этапов s4: рисуются при активации карточки (и при появлении экрана) и застывают */
+  function playStepIcon(i){
+    if(typeof csteps==='undefined' || !csteps[i]) return;
+    var ic=csteps[i].querySelector('.step-icon');
+    if(ic && ic._anim) ic._anim.goToAndPlay(0,true);
+  }
+  window.__onActiveStep=function(i){ playStepIcon(i); };
+  var s4=document.getElementById('s4');
+  if(s4 && 'IntersectionObserver' in window){
+    new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting && typeof ci!=='undefined') playStepIcon(ci);
+    })},{threshold:.4}).observe(s4);
+  }
+})();
+</script>
+</body>
+</html>

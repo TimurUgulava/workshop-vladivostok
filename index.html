@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Воркшоп во Владивостоке — Тимур Угулава</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--ink:#f3f1ec;--mut:#8d8d88;--orange:#fe9901;--line:rgba(255,255,255,.10);--card:rgba(255,255,255,.035)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;overflow:hidden;position:relative}
+  .glow{position:absolute;width:900px;height:900px;border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(circle,rgba(254,153,1,.16),transparent 62%);left:50%;top:-24%;transform:translateX(-50%)}
+  .wrap{position:relative;z-index:1;text-align:center;max-width:880px;width:100%}
+  .eyebrow{display:inline-flex;align-items:center;gap:14px;font-weight:700;font-size:15px;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--orange);margin-bottom:26px}
+  .eyebrow::before,.eyebrow::after{content:"";width:38px;height:2px;background:var(--orange)}
+  h1{font-family:'Unbounded';font-weight:800;font-size:clamp(34px,6vw,64px);line-height:1;letter-spacing:-.01em;margin-bottom:14px}
+  h1 .o{color:var(--orange)}
+  .sub{color:var(--mut);font-size:clamp(15px,2.2vw,20px);font-weight:500;margin-bottom:54px}
+  .days{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media (max-width:620px){.days{grid-template-columns:1fr}}
+  .day{display:block;text-decoration:none;color:inherit;padding:38px 30px;border:1px solid var(--line);
+    border-radius:24px;background:var(--card);transition:.28s;text-align:left}
+  .day:hover{border-color:rgba(254,153,1,.55);transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+  .day .n{font-family:'Unbounded';font-weight:800;font-size:54px;color:var(--orange);line-height:1}
+  .day .t{font-family:'Unbounded';font-weight:700;font-size:23px;margin-top:14px}
+  .day .d{color:var(--mut);font-size:15px;margin-top:8px;line-height:1.4}
+  .day .go{display:inline-flex;align-items:center;gap:9px;margin-top:22px;font-weight:700;font-size:15px;color:var(--orange)}
+  .day .go svg{width:18px;height:18px;transition:.28s}
+  .day:hover .go svg{transform:translateX(5px)}
+  .foot{margin-top:48px;color:var(--mut);font-size:14px}
+  .foot a{color:var(--orange);text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="wrap">
+    <span class="eyebrow">Воркшоп во Владивостоке</span>
+    <h1>Сборка <span class="o">AI-ассистентов</span><br>в Claude Code</h1>
+    <p class="sub">Две посадочные страницы воркшопа — выбери день</p>
+    <div class="days">
+      <a class="day" href="day1/">
+        <div class="n">01</div>
+        <div class="t">День первый</div>
+        <div class="d">Знакомство с Прохором, пайплайн скилла, разбор живых кейсов</div>
+        <span class="go">Открыть
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+      <a class="day" href="day2/">
+        <div class="n">02</div>
+        <div class="t">День второй</div>
+        <div class="d">Claude Code на практике, вайб-кодинг, сборка в зале</div>
+        <span class="go">Открыть
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+    </div>
+    <p class="foot">Скиллы из воркшопа — на <a href="https://github.com/TimurUgulava/claude-skills" target="_blank" rel="noopener">GitHub</a></p>
+  </div>
+</body>
+</html>
